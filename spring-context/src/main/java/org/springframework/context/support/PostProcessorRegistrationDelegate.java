@@ -245,6 +245,7 @@ class PostProcessorRegistrationDelegate {
 
 		/**
 		 * 获取所有的 BeanPostProcessor;
+		 * 如果有Aop：创建名为internalAutoProxyCreator的BeanPostProcessor	-->【AnnotationAwareAspectJAutoProxyCreator 是ordered接口旗下的】
 		 */
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
@@ -271,6 +272,7 @@ class PostProcessorRegistrationDelegate {
 
 		for (String ppName : postProcessorNames) {
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+				//从容器中获取
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
 				if (pp instanceof MergedBeanDefinitionPostProcessor) {

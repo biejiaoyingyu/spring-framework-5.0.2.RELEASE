@@ -418,6 +418,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return initializeBean(beanName, existingBean, null);
 	}
 
+	/**
+	 * 拿到所有的后置处理器调用执行后置处理器的postProcessBeforeInitialization（）
+	 * @param existingBean the new bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
 			throws BeansException {
@@ -432,6 +439,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		return result;
 	}
+
+	/**
+	 * 拿到所有的后置处理器执行后置处理器的postProcessAfterInitialization（）；
+	 * @param existingBean the new bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 
 	@Override
 	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
@@ -1756,7 +1771,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
-
+			/**
+			 * 首先处理Aware接口的方法回调，需要赋值
+			 */
 			invokeAwareMethods(beanName, bean);
 		}
 
