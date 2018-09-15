@@ -197,6 +197,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@Override
 	public Object getBean(String name) throws BeansException {
+		/**
+		 * getBean(beanName)；=====> ioc.getBean();=====>doGetBean(name, null, null, false);
+		 */
 		return doGetBean(name, null, null, false);
 	}
 
@@ -244,6 +247,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+
+		/**
+		 * 获取缓存中保存的单实例Bean。如果能获取到说明这个Bean之前被创建过（所有创建过的单实例Bean都会被缓存起
+		 * 来）从private final Map<String, Object> singletonObjects = new ConcurrentHashMap<String, Object>(256);
+		 * 获取的
+		 */
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {
@@ -266,7 +275,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			// Check if bean definition exists in this factory.
+			/**
+			 * 缓存中获取不到，开始Bean的创建对象流程；
+			 */
 			BeanFactory parentBeanFactory = getParentBeanFactory();
+			/**
+			 * 验证父子容器
+			 */
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
@@ -285,14 +300,23 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			if (!typeCheckOnly) {
+				/**
+				 * 标记已经被创建了
+				 */
 				markBeanAsCreated(beanName);
 			}
 
 			try {
+				/**
+				 * 获取Bean的定义信息
+				 */
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
+				/**
+				 * 获取当前Bean依赖的其他Bean;如果有按照getBean()把依赖的Bean先创建出来
+				 */
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
@@ -306,6 +330,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// Create bean instance.
+				/**
+				 * 启动单实例Bean的创建流程
+				 */
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {

@@ -228,23 +228,47 @@ class PostProcessorRegistrationDelegate {
 		beanFactory.clearMetadataCache();
 	}
 
+	/**
+	 * 注册BeanPostProcessor（Bean的后置处理器）【 intercept bean creation】
+	 * 不同接口类型的BeanPostProcessor；在Bean创建前后的执行时机是不一样的
+	 * BeanPostProcessor、
+	 * DestructionAwareBeanPostProcessor（bean销毁方法的后置处理器）、
+	 * InstantiationAwareBeanPostProcessor、
+	 * SmartInstantiationAwareBeanPostProcessor、
+	 * MergedBeanDefinitionPostProcessor【internalPostProcessors】、
+	 * @param beanFactory
+	 * @param applicationContext
+	 */
+
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
 
+		/**
+		 * 获取所有的 BeanPostProcessor;
+		 */
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
 		// a bean is created during BeanPostProcessor instantiation, i.e. when
 		// a bean is not eligible for getting processed by all BeanPostProcessors.
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
+		/**
+		 * 检查后置处理器？上面+1？
+		 */
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+
+		/**
+		 * 后置处理器都默认可以通过PriorityOrdered、Ordered接口来执行优先级，也是按这个优先级来注册
+		 */
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<>();
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
+
+
 		for (String ppName : postProcessorNames) {
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
@@ -290,10 +314,19 @@ class PostProcessorRegistrationDelegate {
 
 		// Finally, re-register all internal BeanPostProcessors.
 		sortPostProcessors(internalPostProcessors, beanFactory);
+
+		/**
+		 * 最终注册MergedBeanDefinitionPostProcessor【internalPostProcessors】
+		 */
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
 
 		// Re-register post-processor for detecting inner beans as ApplicationListeners,
 		// moving it to the end of the processor chain (for picking up proxies etc).
+
+		/**
+		 * 注册一个ApplicationListenerDetector；来在Bean创建完成后检查是否是ApplicationListener，如果是
+		 * applicationContext.addApplicationListener((ApplicationListener<?>) bean);
+		 */
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
 	}
 
