@@ -250,7 +250,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	/**
-	 * 后置处理器的方法
+	 * 创建实例前调用（顾名思义）postProcessBeforeInstantiation()
 	 * @param beanClass the class of the bean to be instantiated
 	 * @param beanName the name of the bean
 	 * @return

@@ -511,6 +511,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 			/**
 			 * 让BeanPostProcessor先拦截返回代理对象******
+			 * 希望后置处理器在此能返回一个代理对象；如果能返回代理对象就使用，如果
+			 * 不能就继续
 			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -524,7 +526,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			/**
-			 * 如果前面的InstantiationAwareBeanPostProcessor没有返回代理对象
+			 * 如果前面的InstantiationAwareBeanPostProcessor没有返回代理对象，继续创建对象
 			 */
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isDebugEnabled()) {
@@ -1080,7 +1082,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
 					/**
-					 * 先触发：postProcessBeforeInstantiation()；
+					 * 先触发：postProcessBeforeInstantiation()；任何bean创建之前尝试返回对象
 					 */
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
@@ -1110,6 +1112,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
+			/**
+			 * aop的AnnotationAwareAspectJAutoProxyCreator就是InstantiationAwareBeanPostProcessor类型
+			 * 实例化前后调用后置处理器返回对象
+			 */
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
 				/**

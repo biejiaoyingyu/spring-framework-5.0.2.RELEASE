@@ -54,7 +54,9 @@ import org.springframework.util.Assert;
  *
  * 关注后置处理器（在bean（所有bean）初始化完成前后做事情）、自动装配BeanFactory需要分析上面两个接口的特性。
  *
- *
+ *AnnotationAwareAspectJAutoProxyCreator
+ *  ====>SmartInstantiationAwareBeanPostProcessor
+ *    ===> InstantiationAwareBeanPostProcessor
  *
  */
 @SuppressWarnings("serial")
