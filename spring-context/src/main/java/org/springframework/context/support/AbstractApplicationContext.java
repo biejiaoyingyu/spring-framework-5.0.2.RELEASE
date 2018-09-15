@@ -591,6 +591,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				/**
+				 * 完成BeanFactory的初始化创建工作；IOC容器就创建完成
+				 */
 				finishRefresh();
 			}
 
@@ -1044,15 +1047,35 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		clearResourceCaches();
 
 		// Initialize lifecycle processor for this context.
+		/**
+		 * 初始化和生命周期有关的后置处理器
+		 * 默认从容器中找是否有lifecycleProcessor的组件【LifecycleProcessor】；
+		 * 如果没有new DefaultLifecycleProcessor();
+		 * 加入到容器
+		 *
+		 * 写一个LifecycleProcessor的实现类，可以在BeanFactory
+		 * void onRefresh();
+		 * void onClose();
+		 */
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
+
+		/**
+		 * 拿到前面定义的生命周期处理器（BeanFactory）；回调onRefresh()
+		 */
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
+		/**
+		 * publishEvent(new ContextRefreshedEvent(this));发布容器刷新完成事件
+		 */
 		publishEvent(new ContextRefreshedEvent(this));
 
 		// Participate in LiveBeansView MBean, if active.
+		/**
+		 * 最后一步
+		 */
 		LiveBeansView.registerApplicationContext(this);
 	}
 
