@@ -45,6 +45,17 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @since 2.0
  * @see org.springframework.aop.aspectj.annotation.AspectJAdvisorFactory
+ *
+ * ->AnnotationAwareAspectJAutoProxyCreator
+ *    ->AspectJAwareAdvisorAutoProxyCreator
+ *       ->AbstractAdvisorAutoProxyCreator
+ *          ->AbstractAutoProxyCreator
+ *             implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware
+ *
+ * 关注后置处理器（在bean（所有bean）初始化完成前后做事情）、自动装配BeanFactory
+ * 需要分析上面两个接口的特性。
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {

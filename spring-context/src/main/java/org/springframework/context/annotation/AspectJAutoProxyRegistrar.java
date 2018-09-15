@@ -30,6 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Juergen Hoeller
  * @since 3.1
  * @see EnableAspectJAutoProxy
+ *
+ * 利用AspectJAutoProxyRegistrar自定义给容器中注册bean，
  */
 class AspectJAutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -42,6 +44,10 @@ class AspectJAutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 	public void registerBeanDefinitions(
 			AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
+		/**
+		 *给容器中注册一个名字叫internalAutoProxyCreator的AnnotationAwareAspectJAutoProxyCreator
+		 *
+		 */
 		AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
 
 		AnnotationAttributes enableAspectJAutoProxy =
