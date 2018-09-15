@@ -203,6 +203,12 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		this.applyCommonInterceptorsFirst = applyCommonInterceptorsFirst;
 	}
 
+
+	/**
+	 *  AbstractAutoProxyCreator.======>setBeanFactory()
+	 * @param beanFactory owning BeanFactory (never {@code null}).
+	 * The bean can immediately call methods on the factory.
+	 */
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -243,6 +249,13 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
+	/**
+	 * 后置处理器的方法
+	 * @param beanClass the class of the bean to be instantiated
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		Object cacheKey = getCacheKey(beanClass, beanName);
@@ -274,6 +287,12 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		return null;
 	}
 
+	/**
+	 * 后置处理器的方法
+	 * @param bean the bean instance created, with properties not having been set yet
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	public boolean postProcessAfterInstantiation(Object bean, String beanName) {
 		return true;

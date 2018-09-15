@@ -52,8 +52,8 @@ import org.springframework.util.Assert;
  *          ->AbstractAutoProxyCreator
  *             implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware
  *
- * 关注后置处理器（在bean（所有bean）初始化完成前后做事情）、自动装配BeanFactory
- * 需要分析上面两个接口的特性。
+ * 关注后置处理器（在bean（所有bean）初始化完成前后做事情）、自动装配BeanFactory需要分析上面两个接口的特性。
+ *
  *
  *
  */
@@ -86,6 +86,10 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 		this.aspectJAdvisorFactory = aspectJAdvisorFactory;
 	}
 
+	/**
+	 * 父类中的initBeanFactory()被重写
+	 * @param beanFactory
+	 */
 	@Override
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.initBeanFactory(beanFactory);
