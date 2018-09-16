@@ -952,21 +952,30 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws Exception in case of any kind of processing failure
 	 */
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HttpServletRequest processedRequest = request;
-		HandlerExecutionChain mappedHandler = null;
-		boolean multipartRequestParsed = false;
 
+		//接收request对象
+		HttpServletRequest processedRequest = request;
+
+		//声明一个 HandlerExecutionChain处理器执行链
+		HandlerExecutionChain mappedHandler = null;
+		//多部件，和文件上传有关
+		boolean multipartRequestParsed = false;
+		//异步处理有关
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
 		try {
+			//声明模型和视图
 			ModelAndView mv = null;
+			//声明异常
 			Exception dispatchException = null;
 
 			try {
+				//1.检查请求是不是文件上传请求
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				//2.根据当前请求的地址获取哪个处理器能处理这个请求,获得执行链
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
 					noHandlerFound(processedRequest, response);
@@ -974,6 +983,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Determine handler adapter for the current request.
+				//还要根据当前的处理器（处理请求的对象），拿到他的适配器。适配器帮我们执行目标方法。
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -994,12 +1004,13 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Actually invoke the handler.
+				// 执行目标方法
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
 					return;
 				}
-
+				//如果controller没有返回值，设置默认的返回地址，就是请求地址
 				applyDefaultViewName(processedRequest, mv);
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
@@ -1011,6 +1022,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			//处理响应结果，转发到页面
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1185,7 +1197,16 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@Nullable
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		/**
+		 * private List<HandlerMapping> handlerMappings
+		 */
 		if (this.handlerMappings != null) {
+			/**
+			 * HandlerMapping中保存了每一个请求能使用哪个类来处理
+			 * getHandler方法，就是根据HandlerMapping里面保存的哪个
+			 * 请求使用哪个类（Handler处理器）来处理，找到对应的处理器类。
+			 * 找到了处理请求的哪个类，以及他的执行链。???
+			 */
 			for (HandlerMapping hm : this.handlerMappings) {
 				if (logger.isTraceEnabled()) {
 					logger.trace(
@@ -1207,6 +1228,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws Exception if preparing the response failed
 	 */
 	protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		/**
+		 * 控制台经常打印的异常
+		 */
 		if (pageNotFoundLogger.isWarnEnabled()) {
 			pageNotFoundLogger.warn("No mapping found for HTTP request with URI [" + getRequestUri(request) +
 					"] in DispatcherServlet with name '" + getServletName() + "'");
