@@ -133,6 +133,10 @@ import org.springframework.web.util.WebUtils;
  * @see #setContextConfigLocation
  * @see #setContextInitializerClasses
  * @see #setNamespace
+ *
+ *
+ * 有final doGet(),final doPost()调用 final processRequest(request, response)调用抽象的doService()方法被子类实现
+ *
  */
 @SuppressWarnings("serial")
 public abstract class FrameworkServlet extends HttpServletBean implements ApplicationContextAware {
@@ -974,6 +978,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		initContextHolders(request, localeContext, requestAttributes);
 
+		/**
+		 * 调用doService方法
+		 */
 		try {
 			doService(request, response);
 		}

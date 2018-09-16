@@ -901,12 +901,14 @@ public class DispatcherServlet extends FrameworkServlet {
 			while (attrNames.hasMoreElements()) {
 				String attrName = (String) attrNames.nextElement();
 				if (this.cleanupAfterInclude || attrName.startsWith(DEFAULT_STRATEGIES_PREFIX)) {
+					//将数据都map快照中
 					attributesSnapshot.put(attrName, request.getAttribute(attrName));
 				}
 			}
 		}
 
 		// Make framework objects available to handlers and view objects.
+		//设置一些属性
 		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
 		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
 		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
@@ -922,6 +924,10 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		try {
+			/**
+			 * 这个方法才是用来处理请求的方法，将请求派发给相应的处理器进行处理，并且将处理后的结果返回一个页面
+			 */
+			//这里没有捕获异常
 			doDispatch(request, response);
 		}
 		finally {
