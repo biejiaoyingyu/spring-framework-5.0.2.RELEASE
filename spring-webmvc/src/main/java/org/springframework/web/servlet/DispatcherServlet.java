@@ -306,38 +306,53 @@ public class DispatcherServlet extends FrameworkServlet {
 	/** Perform cleanup of request attributes after include request? */
 	private boolean cleanupAfterInclude = true;
 
+	/**
+	 *springmvc
+	 *九大组件只有文件上传没有赋值。
+	 */
+
+
+	//文件上传解析器：作用解析文件上传请求
 	/** MultipartResolver used by this servlet */
 	@Nullable
 	private MultipartResolver multipartResolver;
 
+	//国际化区域信息解析器：作用：支持方便快速的国际化功能
 	/** LocaleResolver used by this servlet */
 	@Nullable
 	private LocaleResolver localeResolver;
 
+	//主题解析器：基于国际化功能实现的
 	/** ThemeResolver used by this servlet */
 	@Nullable
 	private ThemeResolver themeResolver;
 
+	//功能就是保存请求地址和处理器之间的映射信息
 	/** List of HandlerMappings used by this servlet */
 	@Nullable
 	private List<HandlerMapping> handlerMappings;
 
+	//功能就是使用他去执行目标方法
 	/** List of HandlerAdapters used by this servlet */
 	@Nullable
 	private List<HandlerAdapter> handlerAdapters;
 
+	//异常处理解析器：作用：快速简单的异常处理
 	/** List of HandlerExceptionResolvers used by this servlet */
 	@Nullable
 	private List<HandlerExceptionResolver> handlerExceptionResolvers;
 
+	//请求地址转变为视图名的翻译器
 	/** RequestToViewNameTranslator used by this servlet */
 	@Nullable
 	private RequestToViewNameTranslator viewNameTranslator;
 
+	//FlashMap的管理者：FlashMap：支持重定向携带数据
 	/** FlashMapManager used by this servlet */
 	@Nullable
 	private FlashMapManager flashMapManager;
 
+	//视图解析器:负责视图解析的工作。跳转到某个页面（视图）
 	/** List of ViewResolvers used by this servlet */
 	@Nullable
 	private List<ViewResolver> viewResolvers;
