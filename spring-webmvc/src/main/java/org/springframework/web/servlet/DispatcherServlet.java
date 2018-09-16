@@ -280,6 +280,11 @@ public class DispatcherServlet extends FrameworkServlet {
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
 		try {
+
+			/**
+			 * 加载默认策略,类路径下找某个资源。找和DispatcherServlet在同一目录下的某个资源
+			 * 在类路径下可以找到配置文件DispatcherServlet.properties
+			 */
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
 		}
@@ -307,8 +312,10 @@ public class DispatcherServlet extends FrameworkServlet {
 	private boolean cleanupAfterInclude = true;
 
 	/**
-	 *springmvc
-	 *九大组件只有文件上传没有赋值。
+	 * springmvc
+	 * 九大组件只有文件上传没有赋值。
+	 *
+	 * 预留了接口，会优先从ioc容器中找用户自己配置的组件。如果找不到才使用默认策略。
 	 */
 
 
@@ -499,6 +506,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * This implementation calls {@link #initStrategies}.
+	 *
+	 *
+	 * 重写了spring的onRefresh()方法，父子容器？
 	 */
 	@Override
 	protected void onRefresh(ApplicationContext context) {
@@ -508,6 +518,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
+	 *
+	 * 初始化9大组件
 	 */
 	protected void initStrategies(ApplicationContext context) {
 		initMultipartResolver(context);
@@ -597,6 +609,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
+			/**
+			 * 从ioc容器中配置HandlerMapping
+			 */
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -618,6 +633,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
 		if (this.handlerMappings == null) {
+			/**
+			 * 使用默认策略
+			 */
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isDebugEnabled()) {
 				logger.debug("No HandlerMappings found in servlet '" + getServletName() + "': using default");
