@@ -31,6 +31,9 @@ import org.springframework.transaction.config.TransactionManagementConfigUtils;
  * @see EnableTransactionManagement
  * @see ProxyTransactionManagementConfiguration
  * @see TransactionManagementConfigUtils#TRANSACTION_ASPECT_CONFIGURATION_CLASS_NAME
+ *
+ *
+ * 事务导入的组件
  */
 public class TransactionManagementConfigurationSelector extends AdviceModeImportSelector<EnableTransactionManagement> {
 
@@ -40,9 +43,20 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	 * {@code AspectJTransactionManagementConfiguration} for {@code PROXY} and
 	 * {@code ASPECTJ} values of {@link EnableTransactionManagement#mode()}, respectively
 	 */
+
+
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
 		switch (adviceMode) {
+			/**
+			 * 导入两个组件
+			 * AutoProxyRegistrar ----> 给容器中注册一个 InfrastructureAdvisorAutoProxyCreator 组件
+			 * 							利用后置处理器机制在对象创建以后，包装对象，返回一个代理对象（增强器），
+			 * 							代理对象执行方法利用拦截器链进行调用；
+			 * ProxyTransactionManagementConfiguration -->1.给容器中注册事务增强器,事务增强器要用事务注解的信息，
+			 * 												AnnotationTransactionAttributeSource解析事务注解
+			 * 											  2.事务拦截器
+			 */
 			case PROXY:
 				return new String[] {AutoProxyRegistrar.class.getName(), ProxyTransactionManagementConfiguration.class.getName()};
 			case ASPECTJ:

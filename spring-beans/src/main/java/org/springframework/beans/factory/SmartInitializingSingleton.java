@@ -53,6 +53,10 @@ public interface SmartInitializingSingleton {
 	 * and not for any other bean scope either. Carefully use it for beans
 	 * with the intended bootstrap semantics only.
 	 */
+
+	/**
+	 * @EventListener
+	 */
 	void afterSingletonsInstantiated();
 
 }
