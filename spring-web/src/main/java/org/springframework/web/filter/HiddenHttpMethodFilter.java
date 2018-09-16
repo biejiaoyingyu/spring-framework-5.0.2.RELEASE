@@ -72,12 +72,19 @@ public class HiddenHttpMethodFilter extends OncePerRequestFilter {
 		HttpServletRequest requestToUse = request;
 
 		if ("POST".equals(request.getMethod()) && request.getAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE) == null) {
+
+			/**
+			 * restful风格的请求
+			 * DEFAULT_METHOD_PARAM="_method"
+			 * 表单必须是post提交
+			 */
 			String paramValue = request.getParameter(this.methodParam);
 			if (StringUtils.hasLength(paramValue)) {
 				requestToUse = new HttpMethodRequestWrapper(request, paramValue);
 			}
 		}
 
+		//用包装的request，重写父类的getMethod方法
 		filterChain.doFilter(requestToUse, response);
 	}
 
@@ -92,6 +99,7 @@ public class HiddenHttpMethodFilter extends OncePerRequestFilter {
 
 		public HttpMethodRequestWrapper(HttpServletRequest request, String method) {
 			super(request);
+			//都转换为大写
 			this.method = method.toUpperCase(Locale.ENGLISH);
 		}
 
