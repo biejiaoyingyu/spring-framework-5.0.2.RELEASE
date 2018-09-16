@@ -75,6 +75,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 */
 	@Override
 	public boolean isAspect(Class<?> clazz) {
+		//判断是否是切面
 		return (hasAspectAnnotation(clazz) && !compiledByAjc(clazz));
 	}
 

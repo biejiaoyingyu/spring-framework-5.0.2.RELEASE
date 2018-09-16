@@ -279,6 +279,7 @@ public abstract class AopUtils {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
 		else if (advisor instanceof PointcutAdvisor) {
+			//切入点表达式匹配
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
@@ -300,6 +301,7 @@ public abstract class AopUtils {
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
 		}
+		//能用的增强器
 		List<Advisor> eligibleAdvisors = new LinkedList<>();
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {

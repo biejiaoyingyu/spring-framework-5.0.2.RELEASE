@@ -46,6 +46,7 @@ import org.springframework.aop.SpringProxy;
 @SuppressWarnings("serial")
 public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 
+	//spring自动决定，可以强制使用cglib
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
 		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
@@ -55,8 +56,10 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 						"Either an interface or a target is required for proxy creation.");
 			}
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
+				//JdkDynamicAopProxy(config);jdk动态代理；=====>目标类需要实现接口
 				return new JdkDynamicAopProxy(config);
 			}
+			//ObjenesisCglibAopProxy(config);cglib的动态代理；=====>目标类不需要实现接口
 			return new ObjenesisCglibAopProxy(config);
 		}
 		else {

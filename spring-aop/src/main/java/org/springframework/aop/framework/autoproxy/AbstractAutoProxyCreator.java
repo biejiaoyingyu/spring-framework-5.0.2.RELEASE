@@ -261,9 +261,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			//关心MathCalculator和LogAspect的创建
+			//advisedBeans已经增强的bean
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			//判断当前bean是否是基础类型的Advice、Pointcut、Advisor、AopInfrastructureBean，
+			//或者是否是切面（@Aspect）
+
+			//并且是否需要跳过
+			//
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
@@ -368,9 +375,14 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		// Create proxy if we have advice.
+		/**
+		 * 获取当前bean的所有增强器（通知方法）
+		 */
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
+			//保存当前bean
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			//创建代理对象
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
 			this.proxyTypes.put(cacheKey, proxy.getClass());
@@ -478,7 +490,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
-
+		/**
+		 * 获取所有增强器（通知方法）,保存到proxyFactory
+		 */
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
 		proxyFactory.setTargetSource(targetSource);

@@ -100,6 +100,12 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 	@Override
 	protected boolean shouldSkip(Class<?> beanClass, String beanName) {
 		// TODO: Consider optimization by caching the list of the aspect names
+
+		/**
+		 * 获取候选的增强器（切面里面的通知方法）
+		 * 每一个封装的通知方法的增强器是 InstantiationModelAwarePointcutAdvisor
+		 * 判断每一个增强器是否是 AspectJPointcutAdvisor 类型的；返回true
+		 */
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		for (Advisor advisor : candidateAdvisors) {
 			if (advisor instanceof AspectJPointcutAdvisor) {
@@ -108,6 +114,7 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 				}
 			}
 		}
+		//永远跳过
 		return super.shouldSkip(beanClass, beanName);
 	}
 
