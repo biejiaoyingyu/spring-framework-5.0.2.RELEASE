@@ -86,8 +86,10 @@ public abstract class MethodIntrospector {
 	 * recognize handler methods of interest
 	 * @return the selected methods, or an empty set in case of no match
 	 */
-	public static Set<Method> selectMethods(Class<?> targetType, final ReflectionUtils.MethodFilter methodFilter) {
-		return selectMethods(targetType, (MetadataLookup<Boolean>) method -> (methodFilter.matches(method) ? Boolean.TRUE : null)).keySet();
+	public static Set<Method>  selectMethods(Class<?> targetType, final ReflectionUtils.MethodFilter methodFilter) {
+		//如果为null应该会返回fasle
+		//t -> (methodFilter.matches(t) ? Boolean.TRUE : null)是一个MetadataLookup<Boolean>的实现
+		return selectMethods(targetType, (MetadataLookup<Boolean>) t -> (methodFilter.matches(t) ? Boolean.TRUE : null)).keySet();
 	}
 
 	/**

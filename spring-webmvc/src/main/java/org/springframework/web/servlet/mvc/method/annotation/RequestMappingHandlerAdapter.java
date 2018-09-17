@@ -875,8 +875,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 			/**
 			 * 用于创建WebDataBinder,用于参数绑定,实现参数和String之间的类型转换
-			 * ArgumentResolve进行参数解析的过程中会用到WebDataBinder
-			 * ModelFactory在更新Model是也会用到WebDataBinder
+			 *   ->ArgumentResolve进行参数解析的过程中会用到WebDataBinder
+			 *   ->ModelFactory在更新Model是也会用到WebDataBinder
 			 *----------------
 			 * WebDataBinderFactory的创建过程:
 			 * 找出符合条件的@InitBinder方法,
@@ -1124,6 +1124,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * MethodFilter that matches {@link InitBinder @InitBinder} methods.
 	 * 相当于实现了MethodFilter接口
 	 * method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
+	 * 如果用 AnnotationUtils.findAnnotation 找到了相应的注解,就返回true，否则返回false
 	 */
 	public static final MethodFilter INIT_BINDER_METHODS = method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
 

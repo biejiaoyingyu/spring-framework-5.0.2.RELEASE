@@ -541,6 +541,10 @@ public abstract class AnnotationUtils {
 			return null;
 		}
 
+		/**
+		 * AnnotationCacheKey实现了Comparable接口，通过比较两个参数的toString()方法来区别
+		 * 所以这个键是唯一的
+		 */
 		AnnotationCacheKey cacheKey = new AnnotationCacheKey(method, annotationType);
 		A result = (A) findAnnotationCache.get(cacheKey);
 
