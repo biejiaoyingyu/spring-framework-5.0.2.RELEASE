@@ -92,7 +92,7 @@ public final class ModelFactory {
 	/**
 	 * Populate the model in the following order:
 	 * <ol>
-	 * <li>Retrieve "known" session attributes listed as {@code @SessionAttributes}.
+	 * <li>Retrieve(检索) "known" session attributes listed as {@code @SessionAttributes}.
 	 * <li>Invoke {@code @ModelAttribute} methods
 	 * <li>Find {@code @ModelAttribute} method arguments also listed as
 	 * {@code @SessionAttributes} and ensure they're present in the model raising
@@ -106,6 +106,9 @@ public final class ModelFactory {
 	public void initModel(NativeWebRequest request, ModelAndViewContainer container,
 			HandlerMethod handlerMethod) throws Exception {
 
+		/**
+		 * 处理@SessionAttributes？
+		 */
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
 		container.mergeAttributes(sessionAttributes);
 		invokeModelAttributeMethods(request, container);

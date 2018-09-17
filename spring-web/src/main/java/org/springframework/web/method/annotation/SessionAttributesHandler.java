@@ -16,14 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -31,6 +23,9 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionAttributeStore;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages controller-specific session attributes declared via
@@ -69,6 +64,9 @@ public class SessionAttributesHandler {
 		Assert.notNull(sessionAttributeStore, "SessionAttributeStore may not be null");
 		this.sessionAttributeStore = sessionAttributeStore;
 
+		/**
+		 * 寻找@SessionAttributes
+		 */
 		SessionAttributes annotation =
 				AnnotatedElementUtils.findMergedAnnotation(handlerType, SessionAttributes.class);
 		if (annotation != null) {

@@ -16,17 +16,6 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -36,6 +25,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Convenient superclass for any kind of web content generator,
@@ -375,12 +370,18 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	 */
 	protected final void checkRequest(HttpServletRequest request) throws ServletException {
 		// Check whether we should support the request method.
+		/**
+		 *  根据supportedMethods属性判断是否支持当前请求的请求类型
+		 */
 		String method = request.getMethod();
 		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {
 			throw new HttpRequestMethodNotSupportedException(method, this.supportedMethods);
 		}
 
 		// Check whether a session is required.
+		/**
+		 *当requireSession(默认false)为true时,检查Session是否存在
+		 */
 		if (this.requireSession && request.getSession(false) == null) {
 			throw new HttpSessionRequiredException("Pre-existing session required but none found");
 		}
@@ -442,6 +443,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	protected final void applyCacheSeconds(HttpServletResponse response, int cacheSeconds) {
 		if (this.useExpiresHeader || !this.useCacheControlHeader) {
 			// Deprecated HTTP 1.0 cache behavior, as in previous Spring versions
+			/// cacheSeconds>0设置缓存时间,cacheSeconds=0阻止缓存
 			if (cacheSeconds > 0) {
 				cacheForSeconds(response, cacheSeconds);
 			}
