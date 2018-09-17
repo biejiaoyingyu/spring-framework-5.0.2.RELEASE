@@ -877,7 +877,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			 * 用于创建WebDataBinder,用于参数绑定,实现参数和String之间的类型转换
 			 * ArgumentResolve进行参数解析的过程中会用到WebDataBinder
 			 * ModelFactory在更新Model是也会用到WebDataBinder
-			 *-----------------
+			 *----------------
 			 * WebDataBinderFactory的创建过程:
 			 * 找出符合条件的@InitBinder方法,
 			 * 使用它们创建ServletRequestDataBinderFactory类型的WebDataBinderFactory
@@ -887,6 +887,15 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			 * (创建RequestMappingHandlerAdapter时已经设置到缓存)
 			 * 2,处理自身的InitBinder方法(第一次调用后保存到缓存中)
 			 * 添加顺序是先全局后自身
+			 * -----------
+			 * 在实际操作中经常会碰到表单中的日期 字符串和Javabean中的日期类型的属性自动转换，
+			 * 而springMVC默认不支持这个格式的转换，所以必须要手动配置， 自定义数据类型的绑定才能实现这个功能。
+			 * 比较简单的可以直接应用springMVC的注解@initbinder和spring自带的WebDataBinder类和操作。
+			 * @InitBinder
+			 * protected void initBinder(WebDataBinder binder) {
+			 * 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			 * 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+			 * }
 			 */
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
 			/**
@@ -1032,12 +1041,14 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {
+		//获得当前Handler的类型
 		Class<?> handlerType = handlerMethod.getBeanType();
-		//  检查当前Handler中的InitBinder方法是否已经在缓存中
+		//检查当前Handler中的InitBinder方法是否已经在缓存中，以当前类型为key，@InitBinder注解的方法的集合为值
 		Set<Method> methods = this.initBinderCache.get(handlerType);
 		// 如果没在缓存中,找到并设置到缓存
 		if (methods == null) {
 			methods = MethodIntrospector.selectMethods(handlerType, INIT_BINDER_METHODS);
+			//以当前类型为key，@InitBinder注解的方法的集合为值
 			this.initBinderCache.put(handlerType, methods);
 		}
 		// 保存initBinder方法的集合
@@ -1111,9 +1122,10 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	/**
 	 * MethodFilter that matches {@link InitBinder @InitBinder} methods.
+	 * 相当于实现了MethodFilter接口
+	 * method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
 	 */
-	public static final MethodFilter INIT_BINDER_METHODS = method ->
-			AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
+	public static final MethodFilter INIT_BINDER_METHODS = method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
 
 	/**
 	 * MethodFilter that matches {@link ModelAttribute @ModelAttribute} methods.

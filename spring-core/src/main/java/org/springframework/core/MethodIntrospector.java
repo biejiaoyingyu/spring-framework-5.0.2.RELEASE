@@ -16,17 +16,13 @@
 
 package org.springframework.core;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.*;
 
 /**
  * Defines the algorithm for searching for metadata-associated methods exhaustively
@@ -51,6 +47,7 @@ public abstract class MethodIntrospector {
 	 * or {@code null} for no match
 	 * @return the selected methods associated with their metadata (in the order of retrieval),
 	 * or an empty map in case of no match
+	 * 11
 	 */
 	public static <T> Map<Method, T> selectMethods(Class<?> targetType, final MetadataLookup<T> metadataLookup) {
 		final Map<Method, T> methodMap = new LinkedHashMap<>();
@@ -90,8 +87,7 @@ public abstract class MethodIntrospector {
 	 * @return the selected methods, or an empty set in case of no match
 	 */
 	public static Set<Method> selectMethods(Class<?> targetType, final ReflectionUtils.MethodFilter methodFilter) {
-		return selectMethods(targetType,
-				(MetadataLookup<Boolean>) method -> (methodFilter.matches(method) ? Boolean.TRUE : null)).keySet();
+		return selectMethods(targetType, (MetadataLookup<Boolean>) method -> (methodFilter.matches(method) ? Boolean.TRUE : null)).keySet();
 	}
 
 	/**

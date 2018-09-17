@@ -1001,7 +1001,6 @@ public class DispatcherServlet extends FrameworkServlet {
 			ModelAndView mv = null;
 			//声明异常
 			Exception dispatchException = null;
-
 			try {
 				//1.检查请求是不是文件上传请求
 				processedRequest = checkMultipart(request);

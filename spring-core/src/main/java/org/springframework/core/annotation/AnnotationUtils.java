@@ -528,6 +528,10 @@ public abstract class AnnotationUtils {
 	 * @param annotationType the annotation type to look for
 	 * @return the first matching annotation, or {@code null} if not found
 	 * @see #getAnnotation(Method, Class)
+	 *
+	 *
+	 *
+	 * 查询指定方法的指定注解
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
