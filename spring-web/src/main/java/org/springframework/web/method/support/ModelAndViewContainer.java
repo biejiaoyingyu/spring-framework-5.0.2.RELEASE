@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.support;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.Model;
@@ -27,6 +23,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.SimpleSessionStatus;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Records model and view related decisions made by
@@ -66,6 +66,9 @@ public class ModelAndViewContainer {
 
 	private final Set<String> noBinding = new HashSet<>(4);
 
+	/**
+	 * 没有绑定的
+	 */
 	private final Set<String> bindingDisabled = new HashSet<>(4);
 
 	private final SessionStatus sessionStatus = new SimpleSessionStatus();

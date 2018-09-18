@@ -145,7 +145,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 * Get the method argument values for the current request.
 	 *
 	 *
-	 * 就是这里获取方法的注解
+	 * 就是这里获取方法的参数
 	 */
 	private Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {

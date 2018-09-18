@@ -55,7 +55,7 @@ public class SessionAttributesHandler {
 
 	/**
 	 * Create a new instance for a controller type. Session attribute names and
-	 * types are extracted from the {@code @SessionAttributes} annotation, if
+	 * types are extracted(提取) from the {@code @SessionAttributes} annotation, if
 	 * present, on the given type.
 	 * @param handlerType the controller type
 	 * @param sessionAttributeStore used for session access
@@ -67,8 +67,7 @@ public class SessionAttributesHandler {
 		/**
 		 * 寻找@SessionAttributes
 		 */
-		SessionAttributes annotation =
-				AnnotatedElementUtils.findMergedAnnotation(handlerType, SessionAttributes.class);
+		SessionAttributes annotation = AnnotatedElementUtils.findMergedAnnotation(handlerType, SessionAttributes.class);
 		if (annotation != null) {
 			this.attributeNames.addAll(Arrays.asList(annotation.names()));
 			this.attributeTypes.addAll(Arrays.asList(annotation.types()));

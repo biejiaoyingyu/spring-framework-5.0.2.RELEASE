@@ -1014,7 +1014,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		}
 		List<InvocableHandlerMethod> attrMethods = new ArrayList<>();
 		// Global methods first
-		// 先添加全局@ControllerAdvice方法,后添加当前处理器定义的@ModelAttribute方法
+		// 先添加全局@ControllerAdvice方法（@ExceptionHandler全局异常处理有主要作用）
 		this.modelAttributeAdviceCache.forEach((clazz, methodSet) -> {
 			if (clazz.isApplicableToBeanType(handlerType)) {
 				Object bean = clazz.resolveBean();
@@ -1023,6 +1023,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 		});
+		//后添加当前处理器定义的@ModelAttribute方法
 		for (Method method : methods) {
 			Object bean = handlerMethod.getBean();
 			attrMethods.add(createModelAttributeMethod(binderFactory, bean, method));
@@ -1124,15 +1125,13 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * MethodFilter that matches {@link InitBinder @InitBinder} methods.
 	 * 相当于实现了MethodFilter接口
 	 * method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
-	 * 如果用 AnnotationUtils.findAnnotation 找到了相应的注解,就返回true，否则返回false
+	 * 如果用 AnnotationUtils.findAnnotation 找到了相应的注解（将这个方法放到缓存中）,就返回true，否则返回false
 	 */
 	public static final MethodFilter INIT_BINDER_METHODS = method -> AnnotationUtils.findAnnotation(method, InitBinder.class) != null;
 
 	/**
 	 * MethodFilter that matches {@link ModelAttribute @ModelAttribute} methods.
 	 */
-	public static final MethodFilter MODEL_ATTRIBUTE_METHODS = method ->
-			((AnnotationUtils.findAnnotation(method, RequestMapping.class) == null) &&
-			(AnnotationUtils.findAnnotation(method, ModelAttribute.class) != null));
+	public static final MethodFilter MODEL_ATTRIBUTE_METHODS = method -> ((AnnotationUtils.findAnnotation(method, RequestMapping.class) == null) && (AnnotationUtils.findAnnotation(method, ModelAttribute.class) != null));
 
 }

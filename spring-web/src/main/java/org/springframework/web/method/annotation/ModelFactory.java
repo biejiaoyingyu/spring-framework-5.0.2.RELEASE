@@ -111,6 +111,10 @@ public final class ModelFactory {
 		 */
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
 		container.mergeAttributes(sessionAttributes);
+
+		/**
+		 * 调用@AttributeMethod的方法
+		 */
 		invokeModelAttributeMethods(request, container);
 
 		for (String name : findSessionAttributeArguments(handlerMethod)) {
@@ -119,6 +123,9 @@ public final class ModelFactory {
 				if (value == null) {
 					throw new HttpSessionRequiredException("Expected session attribute '" + name + "'", name);
 				}
+				/**
+				 * 将@SessionAttribute的属性设置到模型中
+				 */
 				container.addAttribute(name, value);
 			}
 		}
@@ -136,6 +143,7 @@ public final class ModelFactory {
 			ModelAttribute ann = modelMethod.getMethodAnnotation(ModelAttribute.class);
 			Assert.state(ann != null, "No ModelAttribute annotation");
 			if (container.containsAttribute(ann.name())) {
+				//默认是要绑定的，没有绑定的需要加入集合中记录吧
 				if (!ann.binding()) {
 					container.setBindingDisabled(ann.name());
 				}
@@ -143,24 +151,38 @@ public final class ModelFactory {
 			}
 
 			Object returnValue = modelMethod.invokeForRequest(request, container);
+			/**
+			 * 如果返回值不是Void
+			 */
 			if (!modelMethod.isVoid()){
 				String returnValueName = getNameForReturnValue(returnValue, modelMethod.getReturnType());
 				if (!ann.binding()) {
 					container.setBindingDisabled(returnValueName);
 				}
 				if (!container.containsAttribute(returnValueName)) {
+					/**
+					 * 将返回值加入到模型中
+					 */
 					container.addAttribute(returnValueName, returnValue);
 				}
 			}
 		}
 	}
 
+	/**
+	 * 处理@ModelAttribute的方法
+	 * @param container
+	 * @return
+	 */
 	private ModelMethod getNextModelMethod(ModelAndViewContainer container) {
 		for (ModelMethod modelMethod : this.modelMethods) {
 			if (modelMethod.checkDependencies(container)) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Selected @ModelAttribute method " + modelMethod);
 				}
+				/**
+				 * 移除当前的方法，返回当前的方法
+				 */
 				this.modelMethods.remove(modelMethod);
 				return modelMethod;
 			}
@@ -291,6 +313,10 @@ public final class ModelFactory {
 
 		private final Set<String> dependencies = new HashSet<>();
 
+		/**
+		 *将@ModelAttribute方法的名字加到dependencies中
+		 * @param handlerMethod
+		 */
 		public ModelMethod(InvocableHandlerMethod handlerMethod) {
 			this.handlerMethod = handlerMethod;
 			for (MethodParameter parameter : handlerMethod.getMethodParameters()) {

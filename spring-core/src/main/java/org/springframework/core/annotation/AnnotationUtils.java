@@ -549,6 +549,7 @@ public abstract class AnnotationUtils {
 		A result = (A) findAnnotationCache.get(cacheKey);
 
 		if (result == null) {
+			//找到桥接方法
 			Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
 			result = findAnnotation((AnnotatedElement) resolvedMethod, annotationType);
 
