@@ -110,7 +110,7 @@ public final class ModelFactory {
 			HandlerMethod handlerMethod) throws Exception {
 
 		/**
-		 * 处理@SessionAttributes？
+		 * 处理当前@SessionAttributes注解的key值，如果有值copy到模型中
 		 */
 		Map<String, ?> sessionAttributes = this.sessionAttributesHandler.retrieveAttributes(request);
 		container.mergeAttributes(sessionAttributes);
@@ -120,15 +120,21 @@ public final class ModelFactory {
 		 */
 		invokeModelAttributeMethods(request, container);
 
+		/**
+		 * name是同时存在于（参数）@ModelAttribute和@SessionAttributes的key值
+		 */
 		for (String name : findSessionAttributeArguments(handlerMethod)) {
+			/**
+			 * 如果模型中不包含这样的key值
+			 */
 			if (!container.containsAttribute(name)) {
+				/**
+				 * 到session中获取这个值，如果有值加入到模型中，否则抛出异常
+				 */
 				Object value = this.sessionAttributesHandler.retrieveAttribute(request, name);
 				if (value == null) {
 					throw new HttpSessionRequiredException("Expected session attribute '" + name + "'", name);
 				}
-				/**
-				 * 将@SessionAttribute的属性设置到模型中
-				 */
 				container.addAttribute(name, value);
 			}
 		}
@@ -143,7 +149,7 @@ public final class ModelFactory {
 
 		while (!this.modelMethods.isEmpty()) {
 			/**
-			 * InvocableHandlerMethod用于处理对应的标注了@ModelAttribute()注解的方法
+			 * InvocableHandlerMethod用于处理对应的标注了@ModelAttribute()注解的方法，应该有相应的元数据
 			 */
 			InvocableHandlerMethod modelMethod = getNextModelMethod(container).getHandlerMethod();
 			ModelAttribute ann = modelMethod.getMethodAnnotation(ModelAttribute.class);
@@ -156,9 +162,12 @@ public final class ModelFactory {
 				continue;
 			}
 
+			/**
+			 * 为什么调用方法之前没有解析注解呢？
+			 */
 			Object returnValue = modelMethod.invokeForRequest(request, container);
 			/**
-			 * 如果返回值不是Void
+			 * 如果返回值不是Void，将返回值加入到模型中
 			 */
 			if (!modelMethod.isVoid()){
 				String returnValueName = getNameForReturnValue(returnValue, modelMethod.getReturnType());
