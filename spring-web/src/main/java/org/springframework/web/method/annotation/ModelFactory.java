@@ -81,6 +81,9 @@ public final class ModelFactory {
 
 		if (handlerMethods != null) {
 			for (InvocableHandlerMethod handlerMethod : handlerMethods) {
+				/**
+				 * 将@ModelAttribute方法包装成InvocableHandlerMethod在包装成ModelMethod
+				 */
 				this.modelMethods.add(new ModelMethod(handlerMethod));
 			}
 		}
@@ -139,6 +142,9 @@ public final class ModelFactory {
 			throws Exception {
 
 		while (!this.modelMethods.isEmpty()) {
+			/**
+			 * InvocableHandlerMethod用于处理对应的标注了@ModelAttribute()注解的方法
+			 */
 			InvocableHandlerMethod modelMethod = getNextModelMethod(container).getHandlerMethod();
 			ModelAttribute ann = modelMethod.getMethodAnnotation(ModelAttribute.class);
 			Assert.state(ann != null, "No ModelAttribute annotation");
@@ -277,6 +283,7 @@ public final class ModelFactory {
 	 */
 	public static String getNameForParameter(MethodParameter parameter) {
 		ModelAttribute ann = parameter.getParameterAnnotation(ModelAttribute.class);
+		//如果有为@ModelAttribute注解标注在方法上，一般会有一个value值（键值），否则为null
 		String name = (ann != null ? ann.value() : null);
 		return (StringUtils.hasText(name) ? name : Conventions.getVariableNameForParameter(parameter));
 	}
@@ -314,13 +321,16 @@ public final class ModelFactory {
 		private final Set<String> dependencies = new HashSet<>();
 
 		/**
-		 *将@ModelAttribute方法的名字加到dependencies中
+		 *将@ModelAttribute方法的参数名加到dependencies中
 		 * @param handlerMethod
 		 */
 		public ModelMethod(InvocableHandlerMethod handlerMethod) {
 			this.handlerMethod = handlerMethod;
 			for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
+
+				//解析将@ModelAttribute方法的参数有没有@ModelAttribute注解
 				if (parameter.hasParameterAnnotation(ModelAttribute.class)) {
+					//这里需要加断点，获取注解的name值(键？)
 					this.dependencies.add(getNameForParameter(parameter));
 				}
 			}

@@ -40,6 +40,9 @@ public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
 
+	/**
+	 *执行请求的目标方法的信息public java.lang.String com.example.demo.AnnotationTestController.hello(javax.servlet.http.HttpServletRequest)
+	 */
 	private final Object handler;
 
 	@Nullable

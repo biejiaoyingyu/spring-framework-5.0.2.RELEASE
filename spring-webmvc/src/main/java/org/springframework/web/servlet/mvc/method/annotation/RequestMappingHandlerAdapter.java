@@ -174,6 +174,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	private final Map<ControllerAdviceBean, Set<Method>> initBinderAdviceCache = new LinkedHashMap<>();
 
+	/**
+	 * 以Controller为键，方法名的集合为值
+	 */
 	private final Map<Class<?>, Set<Method>> modelAttributeCache = new ConcurrentHashMap<>(64);
 
 	private final Map<ControllerAdviceBean, Set<Method>> modelAttributeAdviceCache = new LinkedHashMap<>();
@@ -842,7 +845,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * (never {@code null}).
 	 */
 	private SessionAttributesHandler getSessionAttributesHandler(HandlerMethod handlerMethod) {
-
+		//将@SessionAttribute注解放到缓存中
 		Class<?> handlerType = handlerMethod.getBeanType();
 		SessionAttributesHandler sessionAttrHandler = this.sessionAttributesHandlerCache.get(handlerType);
 		if (sessionAttrHandler == null) {
@@ -1003,9 +1006,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	private ModelFactory getModelFactory(HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {
 
-		// 获取SessionAttributesHandler
+		/**
+		 * 	注意这个后面@SesssionAttribute会用到：获取SessionAttributesHandler，这里面有@SesssionAttribute的注解信息
+		 */
 		SessionAttributesHandler sessionAttrHandler = getSessionAttributesHandler(handlerMethod);
-		// 获取有@ModelAttribute没有@RequestMapping的方法,使用后添加到缓存
+		// 获取有@ModelAttribute并且没有@RequestMapping的方法,使用后添加到缓存，class com.example.demo.AnnotationTestController
 		Class<?> handlerType = handlerMethod.getBeanType();
 		Set<Method> methods = this.modelAttributeCache.get(handlerType);
 		if (methods == null) {
@@ -1025,6 +1030,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		});
 		//后添加当前处理器定义的@ModelAttribute方法
 		for (Method method : methods) {
+			//获取当前的Controller
 			Object bean = handlerMethod.getBean();
 			attrMethods.add(createModelAttributeMethod(binderFactory, bean, method));
 		}
@@ -1032,6 +1038,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	private InvocableHandlerMethod createModelAttributeMethod(WebDataBinderFactory factory, Object bean, Method method) {
+		//得到相应的方法
 		InvocableHandlerMethod attrMethod = new InvocableHandlerMethod(bean, method);
 		if (this.argumentResolvers != null) {
 			attrMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
@@ -1042,9 +1049,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	}
 
 	private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {
-		//获得当前Handler的类型
+		//获得当前Handler的类型，class com.example.demo.AnnotationTestController
 		Class<?> handlerType = handlerMethod.getBeanType();
-		//检查当前Handler中的InitBinder方法是否已经在缓存中，以当前类型为key，@InitBinder注解的方法的集合为值
+		//检查当前Handler中的@InitBinder方法是否已经在缓存中，以当前类型为key，@InitBinder注解的方法的集合为值
 		Set<Method> methods = this.initBinderCache.get(handlerType);
 		// 如果没在缓存中,找到并设置到缓存
 		if (methods == null) {

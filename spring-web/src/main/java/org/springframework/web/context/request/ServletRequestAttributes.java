@@ -16,19 +16,19 @@
 
 package org.springframework.web.context.request;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Servlet-based implementation of the {@link RequestAttributes} interface.
@@ -156,6 +156,9 @@ public class ServletRequestAttributes extends AbstractRequestAttributes {
 				try {
 					Object value = session.getAttribute(name);
 					if (value != null) {
+						/**
+						 * sessionAttributesToUpdate有什么用呢？
+						 */
 						this.sessionAttributesToUpdate.put(name, value);
 					}
 					return value;

@@ -61,7 +61,13 @@ public class DefaultSessionAttributeStore implements SessionAttributeStore {
 	public Object retrieveAttribute(WebRequest request, String attributeName) {
 		Assert.notNull(request, "WebRequest must not be null");
 		Assert.notNull(attributeName, "Attribute name must not be null");
+		/**
+		 * 获取名字
+		 */
 		String storeAttributeName = getAttributeNameInSession(request, attributeName);
+		/**
+		 * 如果为 WebRequest.SCOPE_SESSION 是获取session中的值
+		 */
 		return request.getAttribute(storeAttributeName, WebRequest.SCOPE_SESSION);
 	}
 
