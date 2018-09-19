@@ -61,4 +61,13 @@ public class AnnotationTestController {
 		return SUCCESS;
 	}
 
+
+	@ExceptionHandler()
+	public ModelAndView  handException(Exception exception){
+		ModelAndView modelAndView = new ModelAndView("error");
+		modelAndView.addObject("exception",exception);
+		return modelAndView;
+
+	}
+
 }
