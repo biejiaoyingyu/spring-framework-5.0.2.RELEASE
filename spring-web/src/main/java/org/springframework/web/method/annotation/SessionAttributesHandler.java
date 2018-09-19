@@ -44,10 +44,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SessionAttributesHandler {
 
+	/**
+	 *  属性名称,对应注解的value
+	 */
 	private final Set<String> attributeNames = new HashSet<>();
-
+	/**
+	 * 属性的数据类型,对应注解的types
+	 */
 	private final Set<Class<?>> attributeTypes = new HashSet<>();
-
+	/**
+	 *缓存配置的attribute,包括根据类型扫描得到的属性,这样清除的时候,可以直接以这个为索引操作
+	 */
 	private final Set<String> knownAttributeNames = Collections.newSetFromMap(new ConcurrentHashMap<>(4));
 
 	private final SessionAttributeStore sessionAttributeStore;
@@ -119,7 +126,7 @@ public class SessionAttributesHandler {
 	}
 
 	/**
-	 * Retrieve "known" attributes from the session, i.e. attributes listed
+	 * Retrieve（检索） "known" attributes from the session, i.e. attributes listed
 	 * by name in {@code @SessionAttributes} or attributes previously stored
 	 * in the model that matched by type.
 	 * @param request the current request
@@ -127,7 +134,13 @@ public class SessionAttributesHandler {
 	 */
 	public Map<String, Object> retrieveAttributes(WebRequest request) {
 		Map<String, Object> attributes = new HashMap<>();
+		/**
+		 * 获取注解@SessionAttribute中设置的key，当前controller的？
+		 */
 		for (String name : this.knownAttributeNames) {
+			/**
+			 * 如果设置的key有值则把它保存到attribute中，给跳转之后的请求使用，检索session中的？
+			 */
 			Object value = this.sessionAttributeStore.retrieveAttribute(request, name);
 			if (value != null) {
 				attributes.put(name, value);

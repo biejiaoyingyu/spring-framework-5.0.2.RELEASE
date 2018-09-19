@@ -990,6 +990,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		HttpServletRequest processedRequest = request;
 
 		//声明一个 HandlerExecutionChain处理器执行链
+		//
 		HandlerExecutionChain mappedHandler = null;
 		//多部件，和文件上传有关
 		boolean multipartRequestParsed = false;

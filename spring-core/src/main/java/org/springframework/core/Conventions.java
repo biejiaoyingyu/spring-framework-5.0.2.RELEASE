@@ -16,20 +16,15 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
+import java.util.*;
 
 /**
  * Provides methods to support various naming and other conventions used
@@ -122,6 +117,9 @@ public abstract class Conventions {
 	public static String getVariableNameForParameter(MethodParameter parameter) {
 		Assert.notNull(parameter, "MethodParameter must not be null");
 		Class<?> valueClass;
+		/**
+		 * 多元化
+		 */
 		boolean pluralize = false;
 		String reactiveSuffix = "";
 
@@ -129,6 +127,11 @@ public abstract class Conventions {
 			valueClass = parameter.getParameterType().getComponentType();
 			pluralize = true;
 		}
+		/**
+		 * 自身实例或子类实例 instanceof 自身类  返回true
+		 * 自身类.class.isInstance(自身实例或子类实例)  返回true
+		 * 自身类.class.isAssignableFrom(自身类或子类.class)  返回true
+		 */
 		else if (Collection.class.isAssignableFrom(parameter.getParameterType())) {
 			valueClass = ResolvableType.forMethodParameter(parameter).asCollection().resolveGeneric();
 			if (valueClass == null) {
@@ -150,6 +153,9 @@ public abstract class Conventions {
 		}
 
 		String name = ClassUtils.getShortNameAsProperty(valueClass);
+		/**
+		 * 如果是集合和数组name会加一个list前缀
+		 */
 		return (pluralize ? pluralize(name) : name + reactiveSuffix);
 	}
 
