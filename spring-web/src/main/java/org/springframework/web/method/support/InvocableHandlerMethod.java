@@ -45,16 +45,34 @@ import org.springframework.web.method.HandlerMethod;
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @since 3.1
+ *
+ * -----------------------------------
+ * InvocableHandlerMethod继承自HandlerMethod
+ * InvocableHandlerMethod可以直接调用内部属性method对应的方法
+ *
+ * -----------------------------------
+ * InvocableHandlerMethod就是在HandlerMetod基础上添加了方法的调用功能
+ * 方法调用需要解析参数,所以也提供了解析参数的功能
+ * 注解了@InitBinder和@ModeAttribute的方法就是封装成InvocableHandlerMethod对象
+ * ,然后直接执行的
  */
 public class InvocableHandlerMethod extends HandlerMethod {
 
+	/**
+	 *  WebDataBinderFactory类型,可以创建WebDataBinder
+	 *  用于参数解析器ArgumentSolver中
+	 */
 	@Nullable
 	private WebDataBinderFactory dataBinderFactory;
 
+	/**
+	 *  HandlerMethodArgumentResolverComposite类型用于解析参数
+	 */
 	private HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
-
+	/**
+	 *  ParameterNameDiscoverer类型用来获取参数名,用于MethodParameter中
+	 */
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-
 
 	/**
 	 * Create an instance from a {@code HandlerMethod}.

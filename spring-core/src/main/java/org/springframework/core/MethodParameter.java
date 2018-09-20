@@ -16,27 +16,19 @@
 
 package org.springframework.core;
 
+import kotlin.reflect.KFunction;
+import kotlin.reflect.KParameter;
+import kotlin.reflect.jvm.ReflectJvmMapping;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import kotlin.reflect.KFunction;
-import kotlin.reflect.KParameter;
-import kotlin.reflect.jvm.ReflectJvmMapping;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Helper class that encapsulates the specification of a method parameter, i.e. a {@link Method}
@@ -54,37 +46,43 @@ import org.springframework.util.Assert;
  * @author Sebastien Deleuze
  * @since 2.0
  * @see org.springframework.core.annotation.SynthesizingMethodParameter
+ * -------------------------------------------------------
+ *
+ * 其中最重要的两个属性是:method和parameterIndex
+ * 因为有了这两个参数,参数类型,注释等都可以获取到
+ * parameterNameDiscoverer参数名查找组件,可以查找出参数的名称
+ *
  */
 public class MethodParameter {
-
+    //参数所在方法
 	private final Executable executable;
-
+	// 参数的索引,从0开始
 	private final int parameterIndex;
 
 	@Nullable
 	private volatile Parameter parameter;
-
+	// 嵌套级别
 	private int nestingLevel = 1;
 
 	/** Map from Integer level to Integer type index */
 	@Nullable
 	Map<Integer, Integer> typeIndexesPerLevel;
-
+	// 容器类型,参数所属方法所在的类
 	@Nullable
 	private volatile Class<?> containingClass;
-
+	// 参数类型
 	@Nullable
 	private volatile Class<?> parameterType;
-
+	// Type型的参数类型
 	@Nullable
 	private volatile Type genericParameterType;
-
+	// 参数的注解
 	@Nullable
 	private volatile Annotation[] parameterAnnotations;
-
+	// 参数名称查找器
 	@Nullable
 	private volatile ParameterNameDiscoverer parameterNameDiscoverer;
-
+	// 参数名称
 	@Nullable
 	private volatile String parameterName;
 

@@ -56,6 +56,24 @@ import org.springframework.web.util.NestedServletException;
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @since 3.1
+ *
+ * -------------------
+ * ServletInvocableHandlerMethod继承自InvocableHandlerMethod
+ * 在父类的基础上添加了三个功能:
+ * 1,对@ResponseStatus注解的支出
+ * 2,对返回值的处理
+ * 3,对异步处理结果的处理
+ *
+ * -------------------
+ * @ResponseStatus注解用于处理器方法或返回值上
+ * 作用是对返回Response的Status进行设置
+ * 有两个参数:value(HttpStatus类型)和reason(String类型,默认为空串)错误原因
+ * 当一个方法注释了@ResponseStatus后,返回的Status会使用注释中的Status
+ * 如果处理器返回值为空或reason不为空,将中断处理直接返回(不再渲染页面)
+ *
+ * 返回值的处理是使用returnValueHandlers属性完成的,
+ * returnValueHandlers是HandlerMethodReturnValueHandler类型
+ *
  */
 public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
@@ -104,18 +122,32 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 		 * 设置返回的状态
 		 */
 		setResponseStatus(webRequest);
-
+		/**
+		 * 处理@ResponseStatus注解
+		 */
 		if (returnValue == null) {
+			//判断返回值是不是null
+			// Request的NotModified为真
+			// 有@ResponseStatus
+			// RequestHandled=true
+			// 三个条件有一个成立,则设置请求处理完成并返回
 			if (isRequestNotModified(webRequest) || getResponseStatus() != null || mavContainer.isRequestHandled()) {
 				mavContainer.setRequestHandled(true);
 				return;
 			}
 		}
+		/**
+		 * 返回值不为null,@ResponseStatus存在reason
+		 * 设置请求处理完成并返回
+		 */
 		else if (StringUtils.hasText(getResponseStatusReason())) {
 			mavContainer.setRequestHandled(true);
 			return;
 		}
 
+
+		// 前边都不成立,则设置RequestHandled=false即请求未完成
+		// 使用returnValueHandlers处理返回值
 		mavContainer.setRequestHandled(false);
 		Assert.state(this.returnValueHandlers != null, "No return value handlers");
 		try {

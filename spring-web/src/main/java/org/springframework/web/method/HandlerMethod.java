@@ -50,23 +50,38 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @since 3.1
+ * -----------------------------------------------------
+ *  HandlerMapping组件中用到了HandlerMethod
+ *  HandlerMethod用于封装Handler和处理请求的Method
+ *
+ *  HandlerMethod所有属性都是final类型.创建后不可修改
+ *  如果Handler为String类型,需要从容器查找bean
+ *  将bean属性变为容器中的bean是使用createWithResolvedBean方法完成的
+ *  其实是使用容器中找到的bean和HandlerMethod原来的属性重新建了一个HandlerMethod
+ *
+ *  HandlerMothod定义了两个内部类来封装参数:
+ *  HandlerMethodParameter封装方法调用的参数
+ *  ReturnValueMethodParameter封装方法返回的参数
+ *  ReturnValueMethodParameter继承自HandlerMethodParameter
+ *  他们主要是用method和parameterIndex创建MethodParameter
+ *  他们使用的method都是bridgedMethod,返回值使用的parameterIndex为-1
  */
 public class HandlerMethod {
 
 	/** Logger that is available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	// Handler
 	private final Object bean;
-
+	// 传入的Handler为String类型时,需要使用beanFactory获取bean
 	@Nullable
 	private final BeanFactory beanFactory;
-
+	// bean类型
 	private final Class<?> beanType;
-
+	// method
 	private final Method method;
-
+	// 当method是bridge method时设置为原有方法,否则设置为method
 	private final Method bridgedMethod;
-
+	// 处理请求的方法的参数
 	private final MethodParameter[] parameters;
 
 	@Nullable
@@ -187,8 +202,6 @@ public class HandlerMethod {
 			this.responseStatusReason = annotation.reason();
 		}
 	}
-
-
 	/**
 	 * Return the bean for this handler method.
 	 */
@@ -304,6 +317,9 @@ public class HandlerMethod {
 	/**
 	 * If the provided instance contains a bean name rather than an object instance,
 	 * the bean name is resolved before a {@link HandlerMethod} is created and returned.
+	 *------------------------------------
+	 *  handler为String类型,从容器获取Bean
+	 *  使用当前HandlerMethod和handler新建一个HandlerMethod
 	 */
 	public HandlerMethod createWithResolvedBean() {
 		Object handler = this.bean;
@@ -350,6 +366,7 @@ public class HandlerMethod {
 
 	/**
 	 * A MethodParameter with HandlerMethod-specific behavior.
+	 * 封装方法调用的参数
 	 */
 	protected class HandlerMethodParameter extends SynthesizingMethodParameter {
 
@@ -385,6 +402,7 @@ public class HandlerMethod {
 
 	/**
 	 * A MethodParameter for a HandlerMethod return type based on an actual return value.
+	 * 封装方法返回的参数
 	 */
 	private class ReturnValueMethodParameter extends HandlerMethodParameter {
 
