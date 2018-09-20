@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.ServletException;
-
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.config.BeanExpressionContext;
@@ -35,6 +31,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestScope;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import javax.servlet.ServletException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for resolving method arguments from a named value.
@@ -89,37 +89,91 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	}
 
 
+	/**
+	 * 1. 基于 MethodParameter 构建 NameValueInfo <-- 主要有 name, defaultValue, required
+	 * 2. 通过 BeanExpressionResolver(${}占位符解析器) 解析 name
+	 * 3. 通过模版方法 resolveName 从 HttpServletRequest, Http Headers, URI template variables 中获取对应的属性值
+	 * 4. 对 arg == null 这种情况的处理, 要么使用默认值, 若 required = true && arg == null, 则一般报出异常
+	 * 5. 通过 WebDataBinder 将 arg 转换成 Methodparameter.getParameterType() 类型
+	 * ----------------------------------------
+	 * 子类
+	 * 1. 根据 MethodParameter 创建 NameValueInfo
+	 * 2. 根据 name 从 HttpServletRequest, Http Headers, URI template variables 获取属性值
+	 * 3. 对 arg == null 这种情况的处理
+	 * ----------------------------------------
+	 * 1. SessionAttributeMethodArgumentResolver
+	 *  针对 被 @SessionAttribute 修饰的参数起作用, 参数的获取一般通过 HttpServletRequest.getAttribute(name, RequestAttributes.SCOPE_SESSION)
+	 * 2. RequestParamMethodArgumentResolver
+	 *  针对被 @RequestParam 注解修饰, 但类型不是 Map, 或类型是 Map, 并且 @RequestParam 中指定 name, 一般通过 MultipartHttpServletRequest | HttpServletRequest 获取数据
+	 * 3. RequestHeaderMethodArgumentResolver
+	 *  针对 参数被 RequestHeader 注解, 并且 参数不是 Map 类型, 数据通过 HttpServletRequest.getHeaderValues(name) 获取
+	 * 4. RequestAttributeMethodArgumentResolver
+	 *  针对 被 @RequestAttribute 修饰的参数起作用, 参数的获取一般通过 HttpServletRequest.getAttribute(name, RequestAttributes.SCOPE_REQUEST)
+	 * 5. PathVariableMethodArgumentResolver
+	 *  解决被注解 @PathVariable 注释的参数 <- 这个注解对应的是 uri 中的数据, 在解析 URI 中已经进行解析好了 <- 在 RequestMappingInfoHandlerMapping.handleMatch -> getPathMatcher().extractUriTemplateVariables
+	 * 6. MatrixVariableMethodArgumentResolver
+	 *  针对被 @MatrixVariable 注解修饰的参数起作用,  从 HttpServletRequest 中获取去除 ; 的 URI Template Variables 获取数据
+	 * 7. ExpressionValueMethodArgumentResolver
+	 *  针对被 @Value 修饰, 返回 ExpressionValueNamedValueInfo
+	 * 8. ServletCookieValueMethodArgumentResolver
+	 *  针对被 @CookieValue 修饰, 通过 HttpServletRequest.getCookies 获取对应数据
+	 *
+	 * @param parameter the method parameter to resolve. This parameter must
+	 * have previously been passed to {@link #supportsParameter} which must
+	 * have returned {@code true}.
+	 * @param mavContainer the ModelAndViewContainer for the current request
+	 * @param webRequest the current request
+	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	@Nullable
 	public final Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
+		// 创建 MethodParameter 对应的 NamedValueInfo
 		NamedValueInfo namedValueInfo = getNamedValueInfo(parameter);
 		MethodParameter nestedParameter = parameter.nestedIfOptional();
-
+		// 因为此时的 name 可能还是被 ${} 符号包裹, 则通过 BeanExpressionResolver 来进行解析
 		Object resolvedName = resolveStringValue(namedValueInfo.name);
 		if (resolvedName == null) {
 			throw new IllegalArgumentException(
 					"Specified name must not resolve to null: [" + namedValueInfo.name + "]");
 		}
 
+		// 下面的数据大体通过 HttpServletRequest, Http Headers, URI template variables(URI 模版变量) 获取
+		// @PathVariable     --> 通过前期对 uri 解析后得到的 decodedUriVariables 获得
+		// @RequestParam     --> 通过 HttpServletRequest.getParameterValues(name) 获取
+		// @RequestAttribute --> 通过 HttpServletRequest.getAttribute(name) 获取   <-- 这里的 scope 是 request
+		// @RequestHeader    --> 通过 HttpServletRequest.getHeaderValues(name) 获取
+		// @CookieValue      --> 通过 HttpServletRequest.getCookies() 获取
+		// @SessionAttribute --> 通过 HttpServletRequest.getAttribute(name) 获取 <-- 这里的 scope 是 session
+		// 通过 resolvedName 来解决参数的真实数据  <-- 模版方法
 		Object arg = resolveName(resolvedName.toString(), nestedParameter, webRequest);
 		if (arg == null) {
 			if (namedValueInfo.defaultValue != null) {
+				// 若 arg == null, 则使用 defaultValue, 这里默认值可能也是通过占位符 ${...} 来进行查找
 				arg = resolveStringValue(namedValueInfo.defaultValue);
 			}
 			else if (namedValueInfo.required && !nestedParameter.isOptional()) {
+				// 若 arg == null && defaultValue == null && 非 optional 类型的参数 则通过 handleMissingValue 来进行处理, 一般是报异常
 				handleMissingValue(namedValueInfo.name, nestedParameter, webRequest);
 			}
+			// 对 null 值的处理 一般还是报异常
 			arg = handleNullValue(namedValueInfo.name, arg, nestedParameter.getNestedParameterType());
 		}
+		// 若得到的数据是 "", 则还是使用默认值
 		else if ("".equals(arg) && namedValueInfo.defaultValue != null) {
+			// 这里的默认值有可能也是 ${} 修饰的, 所以也需要通过 BeanExpressionResolver 来进行解析
 			arg = resolveStringValue(namedValueInfo.defaultValue);
 		}
 
 		if (binderFactory != null) {
 			WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
 			try {
+				// 通过 WebDataBinder 中的 Converter 将 arg 转换成 parameter.getParameterType() 对应的类型
+				// 将 arg 转换成 parameter.getParameterType() 类型, 这里就需要 SimpleTypeConverter
 				arg = binder.convertIfNecessary(arg, parameter.getParameterType(), parameter);
 			}
 			catch (ConversionNotSupportedException ex) {
@@ -132,7 +186,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 
 			}
 		}
-
+		// 这里的 handleResolvedValue 一般是空实现, 在PathVariableMethodArgumentResolver中也是存储一下数据到 HttpServletRequest中
 		handleResolvedValue(arg, namedValueInfo.name, parameter, mavContainer, webRequest);
 
 		return arg;

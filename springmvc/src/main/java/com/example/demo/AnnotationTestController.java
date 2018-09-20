@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * Created by cxf on 2018/9/18.
@@ -40,14 +41,14 @@ public class AnnotationTestController {
 	}
 
 
-//	@ModelAttribute
-//	public void myModelAttri(Map<String, Object> map, HttpServletRequest request){
-//		System.out.println("1111111");
-//		//1、提前将数据从数据库中查出来
-//		Book book = new Book(1, "三国演义");
-//		//2、把这个数据保存在隐含模型中
-//		map.put("book", book);
-//	}
+	@ModelAttribute
+	public void myModelAttri(Map<String, Object> map, HttpServletRequest request){
+		System.out.println("1111111");
+		//1、提前将数据从数据库中查出来
+		Book book = new Book(1, "三国演义");
+		//2、把这个数据保存在隐含模型中
+		map.put("bookx", book);
+	}
 
 	@RequestMapping("/updateBook")
 	public String updateBookExt(@ModelAttribute("bookm") Book boook2,HttpServletRequest request,HttpSession session ){
@@ -84,9 +85,9 @@ public class AnnotationTestController {
 	@RequestMapping("/hello")
 	public String  hello(HttpServletRequest request,HttpSession session,Model model){
 		System.out.println(request.getAttribute("user"));
-		model.addAttribute("bookx",new Book(1, "三国演义"));
-		session.setAttribute("bookm",new Book(1, "4国演义"));
-//		System.out.println(request.getAttribute("user2"));
+//		model.addAttribute("bookx",new Book(1, "三国演义"));
+//		session.setAttribute("bookm",new Book(1, "4国演义"));
+////		System.out.println(request.getAttribute("user2"));
 //		System.out.println(session.getAttribute("user2"));
 //		System.out.println(request.getAttribute("user3"));
 //		System.out.println(session.getAttribute("user3"));

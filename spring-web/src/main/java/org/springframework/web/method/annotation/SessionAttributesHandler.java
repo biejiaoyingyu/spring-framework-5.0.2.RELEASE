@@ -135,11 +135,11 @@ public class SessionAttributesHandler {
 	public Map<String, Object> retrieveAttributes(WebRequest request) {
 		Map<String, Object> attributes = new HashMap<>();
 		/**
-		 * 获取注解@SessionAttributeS中设置的key，当前controller的？
+		 * 获取注解当前标注了@SessionAttributeS中设置的key
 		 */
 		for (String name : this.knownAttributeNames) {
 			/**
-			 * 如果设置的key有值则把它保存到模型中，给跳转之后的请求使用，检索session中所有的？
+			 * 如果设置的key有值，检索session中如果存在值，则把它保存到模型中，给跳转页面使用
 			 */
 			Object value = this.sessionAttributeStore.retrieveAttribute(request, name);
 			if (value != null) {

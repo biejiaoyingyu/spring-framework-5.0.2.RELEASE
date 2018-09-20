@@ -38,7 +38,9 @@ public interface HandlerMethodArgumentResolver {
 	 * @param parameter the method parameter to check
 	 * @return {@code true} if this resolver supports the supplied parameter;
 	 * {@code false} otherwise
+	 * 判断 HandlerMethodArgumentResolver 是否支持 MethodParameter(PS: 一般都是通过 参数上面的注解|参数的类型)
 	 */
+
 	boolean supportsParameter(MethodParameter parameter);
 
 	/**
@@ -55,9 +57,25 @@ public interface HandlerMethodArgumentResolver {
 	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
 	 * @return the resolved argument value, or {@code null} if not resolvable
 	 * @throws Exception in case of errors with the preparation of argument values
+	 *
+	 * 从 ModelAndViewContainer(被 @ModelAttribute), NativeWebRequest(其实就是HttpServletRequest) 中获取数据, 解决 方法上的参数
 	 */
 	@Nullable
 	Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception;
+
+
+	/**
+	 * 基于这个接口实现的处理器主要是如下几类
+	 * 1. 基于 Name 从 URI Template Variable, HttpServletRequest, HttpSession,
+	 *    Http 的 Header 中获取数据的 HandlerMethodArgumentResolver
+	 *    (AbstractNamedValueMethodArgumentResolver )
+	 * 2. 数据类型是 Map 的 HandlerMethodArgumentResolver(数据也是从 RI Template
+	 *    Variable, HttpServletRequest, HttpSession, Http 的 Header 中获取)
+	 * 3. 固定参数类型的 HandlerMethodArgumentResolver, 这里的参数比如是
+	 *    SessionStatus, ServletResponse, OutputStream, Writer, WebRequest,
+	 *    MultipartRequest, HttpSession, Principal, InputStream 等
+	 * 4. 基于 ContentType 利用 HttpMessageConverter 将输入流转换成对应的参数
+	 */
 
 }

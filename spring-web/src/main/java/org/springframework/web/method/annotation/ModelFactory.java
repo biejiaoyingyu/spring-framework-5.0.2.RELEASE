@@ -113,7 +113,8 @@ public final class ModelFactory {
 	 *   而且模型中的数据应该是在目标方法调用完成后才放到request中的
 	 * 2.放到@ModelAndView（和一般方法的隐含模型的区别是提前运行）中的数据会放到@SessionAttributes相应的key
 	 * 	 之中的session中，可能是放到了模型中的原因,放到request中的数据不会放到@ModelAndView中，也不会放倒模型中把
-	 * 3.在第二次以后的访问中session中的数据（@SessionAttributes相应的key）并不会同步到request中（和以前很有区别）
+	 * 3.在第二次以后的访问中session中的数据（@SessionAttributes相应的key）会同步到model中但是代码中不能用request
+	 *   获取，最后也会放到request，在页面应该能显示出来
 	 * 4.
 	 * @RequestMapping("/updateBook")
 	 * public String updateBookExt(@ModelAttribute Book boook2,HttpServletRequest request,HttpSession session ){
@@ -186,7 +187,7 @@ public final class ModelFactory {
 			}
 
 			/**
-			 * 为什么调用方法之前没有解析注解呢？
+			 * 为什么调用方法之前没有解析注解呢
 			 */
 			Object returnValue = modelMethod.invokeForRequest(request, container);
 			/**
