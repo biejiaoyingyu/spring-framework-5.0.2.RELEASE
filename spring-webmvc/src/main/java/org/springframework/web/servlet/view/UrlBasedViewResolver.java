@@ -464,6 +464,8 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * superclass always creating instances of the required view class.
 	 * @see #loadView
 	 * @see #requiredViewClass
+	 *
+	 * 这里真正的解析
 	 */
 	@Override
 	protected View createView(String viewName, Locale locale) throws Exception {
@@ -473,6 +475,9 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 			return null;
 		}
 		// Check for special "redirect:" prefix.
+		/**
+		 * 重定向前缀
+		 */
 		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
 			RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
@@ -482,6 +487,9 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 			}
 			return applyLifecycleMethods(viewName, view);
 		}
+		/**
+		 * 转发前缀
+		 */
 		// Check for special "forward:" prefix.
 		if (viewName.startsWith(FORWARD_URL_PREFIX)) {
 			String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
@@ -541,6 +549,9 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @return the View instance
 	 * @throws Exception if the view couldn't be resolved
 	 * @see #loadView(String, java.util.Locale)
+	 *
+	 *
+	 * 拼接地址
 	 */
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		Class<?> viewClass = getViewClass();

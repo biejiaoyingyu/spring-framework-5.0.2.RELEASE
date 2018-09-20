@@ -132,6 +132,8 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	/**
 	 * Render the internal resource given the specified model.
 	 * This includes setting the model as request attributes.
+	 *
+	 * 这里处理页面渲染
 	 */
 	@Override
 	protected void renderMergedOutputModel(
@@ -167,6 +169,9 @@ public class InternalResourceView extends AbstractUrlBasedView {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Forwarding to resource [" + getUrl() + "] in InternalResourceView '" + getBeanName() + "'");
 			}
+			/**
+			 * 转发
+			 */
 			rd.forward(request, response);
 		}
 	}
