@@ -167,8 +167,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			 */
 			if (this.argumentResolvers.supportsParameter(parameter)) {
 				try {
-					args[i] = this.argumentResolvers.resolveArgument(
-							parameter, mavContainer, request, this.dataBinderFactory);
+					args[i] = this.argumentResolvers.resolveArgument(parameter, mavContainer, request, this.dataBinderFactory);
 					continue;
 				}
 				catch (Exception ex) {

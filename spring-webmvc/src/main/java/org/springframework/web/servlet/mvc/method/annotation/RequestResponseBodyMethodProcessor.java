@@ -16,11 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -43,6 +38,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Resolves method arguments annotated with {@code @RequestBody} and handles return
@@ -125,37 +125,44 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		// 获取嵌套参数 <- 有可能参数是用 Optional
 		parameter = parameter.nestedIfOptional();
+		// 通过 HttpMessageConverter 来将数据转换成合适的类型
 		Object arg = readWithMessageConverters(webRequest, parameter, parameter.getNestedGenericParameterType());
+		// 获取参数的名字
 		String name = Conventions.getVariableNameForParameter(parameter);
-
+		// 构建 WebDataBinder, 参数中的第二个值 arg 其实就是 DataBinder 的 target
 		if (binderFactory != null) {
 			WebDataBinder binder = binderFactory.createBinder(webRequest, arg, name);
 			if (arg != null) {
+				// @Validated 进行参数的校验
 				validateIfApplicable(binder, parameter);
+				// 若有异常则直接暴出来
 				if (binder.getBindingResult().hasErrors() && isBindExceptionRequired(binder, parameter)) {
 					throw new MethodArgumentNotValidException(parameter, binder.getBindingResult());
 				}
 			}
+			//将绑定的结果保存在 ModelAndViewContainer 中
 			if (mavContainer != null) {
 				mavContainer.addAttribute(BindingResult.MODEL_KEY_PREFIX + name, binder.getBindingResult());
 			}
 		}
-
+		// 对 Optional类型的参数的处理
 		return adaptArgumentIfNecessary(arg, parameter);
 	}
 
 	@Override
 	protected <T> Object readWithMessageConverters(NativeWebRequest webRequest, MethodParameter parameter,
 			Type paramType) throws IOException, HttpMediaTypeNotSupportedException, HttpMessageNotReadableException {
-
+		// 从 NativeWebRequest 中获取  HttpServletRequest
 		HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 		Assert.state(servletRequest != null, "No HttpServletRequest");
+		// 封装 ServletServerHttpRequest
 		ServletServerHttpRequest inputMessage = new ServletServerHttpRequest(servletRequest);
-
+		// 通过 InputMessage 中读取参数的内容, 并且 通过 HttpMessageConverter 来将数据转换成 paramType 类型的参数
 		Object arg = readWithMessageConverters(inputMessage, parameter, paramType);
 		if (arg == null) {
+			// 检测参数是否是必需的
 			if (checkRequired(parameter)) {
 				throw new HttpMessageNotReadableException("Required request body is missing: " +
 						parameter.getExecutable().toGenericString());
