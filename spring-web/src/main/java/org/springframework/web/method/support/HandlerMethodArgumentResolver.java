@@ -61,7 +61,7 @@ public interface HandlerMethodArgumentResolver {
 	 * 从 ModelAndViewContainer(被 @ModelAttribute), NativeWebRequest(其实就是HttpServletRequest) 中获取数据, 解决 方法上的参数
 	 */
 	@Nullable
-	Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
+	Object  resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception;
 
 

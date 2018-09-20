@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -27,6 +25,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -46,6 +46,18 @@ public class UriComponentsBuilderMethodArgumentResolver implements HandlerMethod
 		return (UriComponentsBuilder.class == type || ServletUriComponentsBuilder.class == type);
 	}
 
+
+	/**
+	 * 支持参数类型是 UriComponentsBuilder, 直接通过 ServletUriComponentsBuilder.fromServletMapping(request) 构建对象
+	 * @param parameter the method parameter to resolve. This parameter must
+	 * have previously been passed to {@link #supportsParameter} which must
+	 * have returned {@code true}.
+	 * @param mavContainer the ModelAndViewContainer for the current request
+	 * @param webRequest the current request
+	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {

@@ -16,18 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.security.Principal;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.PushBuilder;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
@@ -39,6 +27,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.PushBuilder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.security.Principal;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Resolves request-related method argument values of the following types:
@@ -96,6 +96,18 @@ public class ServletRequestMethodArgumentResolver implements HandlerMethodArgume
 				ZoneId.class == paramType);
 	}
 
+	/**
+	 * 支持 WebRequest, ServletRequest, MultipartRequest, HttpSession, Principal,
+	 * InputStream, Reader, HttpMethod, Locale, TimeZone, 数据通过 HttpServletRequest 获取
+	 * @param parameter the method parameter to resolve. This parameter must
+	 * have previously been passed to {@link #supportsParameter} which must
+	 * have returned {@code true}.
+	 * @param mavContainer the ModelAndViewContainer for the current request
+	 * @param webRequest the current request
+	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {

@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.Model;
@@ -30,6 +28,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+
+import java.util.Map;
 
 /**
  * Resolves method arguments of type {@link RedirectAttributes}.
@@ -51,6 +51,19 @@ public class RedirectAttributesMethodArgumentResolver implements HandlerMethodAr
 		return RedirectAttributes.class.isAssignableFrom(parameter.getParameterType());
 	}
 
+	/**
+	 * RedirectAttributesMethodArgumentResolver
+	 * 针对 RedirectAttributes及其子类的参数 的参数解决器, 主要还是基于 NativeWebRequest && DataBinder
+	 * (通过 dataBinder 构建 RedirectAttributesModelMap)
+	 * @param parameter the method parameter to resolve. This parameter must
+	 * have previously been passed to {@link #supportsParameter} which must
+	 * have returned {@code true}.
+	 * @param mavContainer the ModelAndViewContainer for the current request
+	 * @param webRequest the current request
+	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {

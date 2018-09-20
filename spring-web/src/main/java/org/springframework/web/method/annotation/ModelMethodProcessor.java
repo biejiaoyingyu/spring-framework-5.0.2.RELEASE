@@ -44,6 +44,17 @@ public class ModelMethodProcessor implements HandlerMethodArgumentResolver, Hand
 		return Model.class.isAssignableFrom(parameter.getParameterType());
 	}
 
+	/**
+	 *  针对 Model 及其子类的参数, 数据的获取一般通过 ModelAndViewContainer.getModel()
+	 * @param parameter the method parameter to resolve. This parameter must
+	 * have previously been passed to {@link #supportsParameter} which must
+	 * have returned {@code true}.
+	 * @param mavContainer the ModelAndViewContainer for the current request
+	 * @param webRequest the current request
+	 * @param binderFactory a factory for creating {@link WebDataBinder} instances
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,

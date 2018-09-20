@@ -118,6 +118,19 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	 * 8. ServletCookieValueMethodArgumentResolver
 	 *  针对被 @CookieValue 修饰, 通过 HttpServletRequest.getCookies 获取对应数据
 	 *
+	 *  --------------------------
+	 *   解决类型是Map 的 HandlerMethodArgumentResolver
+	 * 1. RequestParamMapMethodArgumentResolver
+	 *  针对被 @RequestParam注解修饰, 且参数类型是 Map 的, 且 @RequestParam 中没有指定 name, 从 HttpServletRequest 里面获取所有请求参数, 最后封装成 LinkedHashMap|LinkedMultiValueMap 的参数解析器
+	 * 2. RequestHeaderMapMethodArgumentResolver
+	 *  解决被 @RequestHeader 注解修饰, 并且类型是 Map 的参数, HandlerMethodArgumentResolver会将 Http header 中的所有 name <--> value 都放入其中
+	 * 3. PathVariableMapMethodArgumentResolver
+	 *  针对被 @PathVariable 注解修饰, 并且类型是 Map的, 且 @PathVariable.value ＝= null, 从 HttpServletRequest 中所有的 URI 模版变量 (PS: URI 模版变量的获取是通过 RequestMappingInfoHandlerMapping.handleMatch 获取)
+	 * 4. MatrixVariableMapMethodArgumentResolver
+	 *  针对被 @MatrixVariable 注解修饰, 并且类型是 Map的, 且 MatrixVariable.name == null, 从 HttpServletRequest 中获取 URI 模版变量 <-- 并且是去除 ;
+	 * 5. MapMethodProcessor
+	 *  针对被 参数是 Map, 数据直接从 ModelAndViewContainer 获取 Model
+	 *
 	 * @param parameter the method parameter to resolve. This parameter must
 	 * have previously been passed to {@link #supportsParameter} which must
 	 * have returned {@code true}.
@@ -248,19 +261,6 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	}
 
 	/**
-	 * Resolve the given parameter type and value name into an argument value.
-	 * @param name the name of the value being resolved
-	 * @param parameter the method parameter to resolve to an argument value
-	 * (pre-nested in case of a {@link java.util.Optional} declaration)
-	 * @param request the current request
-	 * @return the resolved argument (may be {@code null})
-	 * @throws Exception in case of errors
-	 */
-	@Nullable
-	protected abstract Object resolveName(String name, MethodParameter parameter, NativeWebRequest request)
-			throws Exception;
-
-	/**
 	 * Invoked when a named value is required, but {@link #resolveName(String, MethodParameter, NativeWebRequest)}
 	 * returned {@code null} and there is no default value. Subclasses typically throw an exception in this case.
 	 * @param name the name for the value
@@ -273,6 +273,19 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 
 		handleMissingValue(name, parameter);
 	}
+
+	/**
+	 * Resolve the given parameter type and value name into an argument value.
+	 * @param name the name of the value being resolved
+	 * @param parameter the method parameter to resolve to an argument value
+	 * (pre-nested in case of a {@link java.util.Optional} declaration)
+	 * @param request the current request
+	 * @return the resolved argument (may be {@code null})
+	 * @throws Exception in case of errors
+	 */
+	@Nullable
+	protected abstract Object resolveName(String name, MethodParameter parameter, NativeWebRequest request)
+	throws Exception;
 
 	/**
 	 * Invoked when a named value is required, but {@link #resolveName(String, MethodParameter, NativeWebRequest)}
