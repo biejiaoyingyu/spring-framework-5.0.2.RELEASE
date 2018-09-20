@@ -106,6 +106,29 @@ public final class ModelFactory {
 	 * @param handlerMethod the method for which the model is initialized
 	 * @throws Exception may arise from {@code @ModelAttribute} methods
 	 */
+
+
+	/**
+	 * 1.放到模型中的数据才会被放到@SessionAttributes相应的key之中的session中，放在request中是不会放进去的，
+	 *   而且模型中的数据应该是在目标方法调用完成后才放到request中的
+	 * 2.放到@ModelAndView（和一般方法的隐含模型的区别是提前运行）中的数据会放到@SessionAttributes相应的key
+	 * 	 之中的session中，可能是放到了模型中的原因,放到request中的数据不会放到@ModelAndView中，也不会放倒模型中把
+	 * 3.在第二次以后的访问中session中的数据（@SessionAttributes相应的key）并不会同步到request中（和以前很有区别）
+	 * 4.
+	 * @RequestMapping("/updateBook")
+	 * public String updateBookExt(@ModelAttribute Book boook2,HttpServletRequest request,HttpSession session ){
+	 * System.out.println("updateBookExt....");
+	 * System.out.println("SpringMVC自动封装的结果："+ boook2);
+	 * //save(book)
+	 * //1）、本来要将页面带来的数据封装成book对象
+	 * //2）、默认是根据反射创建一个新的book对象。将页面的值设置到这个对象中
+	 * //3）、如果隐含模型中有这个对象，直接取出这个对象。将页面的值封装到这个对象中，不用再去创建新对象了
+	 * //?) 、如果隐含模型中没有而且@SessionAttributes注解有这个键（默认为@ModelAttribute 1.注解的value值，2。如果没有value值
+	 * 		  就是注解相应的参数的类型小写） 会到session中取(无论通过model放到session中，还是直接放到session中都可以)，如果娶不到会报异常
+	 * 		  最后才回到第一步。
+	 * //return "success";
+	 * //}
+	 */
 	public void initModel(NativeWebRequest request, ModelAndViewContainer container,
 			HandlerMethod handlerMethod) throws Exception {
 
