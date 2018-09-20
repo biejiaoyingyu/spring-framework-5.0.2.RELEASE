@@ -187,7 +187,7 @@ public final class ModelFactory {
 			}
 
 			/**
-			 * 为什么调用方法之前没有解析注解呢
+			 * 调用方法的时候解析注解
 			 */
 			Object returnValue = modelMethod.invokeForRequest(request, container);
 			/**
@@ -200,7 +200,7 @@ public final class ModelFactory {
 				}
 				if (!container.containsAttribute(returnValueName)) {
 					/**
-					 * 将返回值加入到模型中
+					 * 将返回值加入到模型中，只有第一次的有效果么？后面的不会覆盖前面的
 					 */
 					container.addAttribute(returnValueName, returnValue);
 				}
