@@ -63,19 +63,31 @@ public class AllEncompassingFormHttpMessageConverter extends FormHttpMessageConv
 					AllEncompassingFormHttpMessageConverter.class.getClassLoader());
 
 
+	/**
+	 * 添加一些转化器
+	 */
 	public AllEncompassingFormHttpMessageConverter() {
-		addPartConverter(new SourceHttpMessageConverter<>());
 
+		addPartConverter(new SourceHttpMessageConverter<>());
+		//如果Classpath下面有javax.xml.bind.Binder类，
+		//没有com.fasterxml.jackson.dataformat.xml.XmlMapper类的话
+		//则添加Jaxb2RootElementHttpMessageConverter转换器
 		if (jaxb2Present && !jackson2XmlPresent) {
 			addPartConverter(new Jaxb2RootElementHttpMessageConverter());
 		}
-
+		//如果Classpath下有com.fasterxml.jackson.databind.ObjectMapper
+		//和com.fasterxml.jackson.core.JsonGenerator的话，则添加
+		//MappingJackson2HttpMessageConverter转换器
 		if (jackson2Present) {
 			addPartConverter(new MappingJackson2HttpMessageConverter());
 		}
+		//如果Classpath下面有com.google.gson.Gson类的话，则添加
+		//GsonHttpMessageConverter转换器
 		else if (gsonPresent) {
 			addPartConverter(new GsonHttpMessageConverter());
 		}
+		//如果Classpath下有com.fasterxml.jackson.dataformat.xml.XmlMapper类的话，
+		//则添加MappingJackson2XmlHttpMessageConverter转换器
 		else if (jsonbPresent) {
 			addPartConverter(new JsonbHttpMessageConverter());
 		}

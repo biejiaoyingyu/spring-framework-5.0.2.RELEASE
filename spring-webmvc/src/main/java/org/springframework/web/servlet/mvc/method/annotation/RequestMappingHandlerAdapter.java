@@ -112,25 +112,23 @@ import org.springframework.web.util.WebUtils;
  * @since 3.1
  * @see HandlerMethodArgumentResolver
  * @see HandlerMethodReturnValueHandler
+ *
+ * ---------------------------------
+ *  impliments InitializingBean， ServletContextAware， BeanFactoryAware，ApplicationContextAware
+ *
  */
 public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		implements BeanFactoryAware, InitializingBean {
-
 	@Nullable
 	private List<HandlerMethodArgumentResolver> customArgumentResolvers;
-
 	@Nullable
 	private HandlerMethodArgumentResolverComposite argumentResolvers;
-
 	@Nullable
 	private HandlerMethodArgumentResolverComposite initBinderArgumentResolvers;
-
 	@Nullable
 	private List<HandlerMethodReturnValueHandler> customReturnValueHandlers;
-
 	@Nullable
 	private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
-
 	@Nullable
 	private List<ModelAndViewResolver> modelAndViewResolvers;
 
@@ -182,14 +180,21 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	private final Map<ControllerAdviceBean, Set<Method>> modelAttributeAdviceCache = new LinkedHashMap<>();
 
 
+	/**
+	 * 构造函数：里默认添加了四种类型的Http数据转换器
+	 */
 	public RequestMappingHandlerAdapter() {
 		StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
 		stringHttpMessageConverter.setWriteAcceptCharset(false);  // see SPR-7316
 
 		this.messageConverters = new ArrayList<>(4);
+
 		this.messageConverters.add(new ByteArrayHttpMessageConverter());
 		this.messageConverters.add(stringHttpMessageConverter);
 		this.messageConverters.add(new SourceHttpMessageConverter<>());
+		/**
+		 * 这个最重要
+		 */
 		this.messageConverters.add(new AllEncompassingFormHttpMessageConverter());
 	}
 
@@ -214,6 +219,10 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	/**
 	 * Configure the complete list of supported argument types thus overriding
 	 * the resolvers that would otherwise be configured by default.
+	 * 如果我们在配置RequestMappingHandlerAdapter的时候设置了一系列HandlerMethodArgumentResolver的实现类的话
+	 * 它会先创建HandlerMethodArgumentResolverComposite对象，然后把配置的HandlerMethodArgumentResolver的实
+	 * 现类添加到HandlerMethodArgumentResolverComposite的对象中。这里我们是没有手工配置RequestMappingHandlerAdapter
+	 * 的，所以，会先调用getDefaultArgumentResolvers方法，获取一系列默认的HandlerMethodArgumentResolver的实现类
 	 */
 	public void setArgumentResolvers(@Nullable List<HandlerMethodArgumentResolver> argumentResolvers) {
 		if (argumentResolvers == null) {
@@ -580,26 +589,33 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	/**
 	 * 初始化后调用这个方法，也相当于初始化方法
+	 * 在这个方法里主要是获取了带ControllerAdvice注解的类，并从这些类中
+	 * 查找实现了RequestBodyAdvice或者ResponseBodyAdvice接口的类，添
+	 * 加到requestResponseBodyAdvice集合中，另外获取所有带ModelAttribute
+	 * 注解且没有RequestMapping注解的方法，放到modelAttributeAdviceCache
+	 * 集合中，获取所有带InitBinder注解的方法放到initBinderAdviceCache的集合中
 	 */
 	private void initControllerAdviceCache() {
+		//通过上面的分析我们知道，这个方法的内容不为null
 		if (getApplicationContext() == null) {
 			return;
 		}
 		if (logger.isInfoEnabled()) {
 			logger.info("Looking for @ControllerAdvice: " + getApplicationContext());
 		}
-
+		//获取所有带ControllerAdvice注解的类
 		List<ControllerAdviceBean> adviceBeans = ControllerAdviceBean.findAnnotatedBeans(getApplicationContext());
+		//对获取到的ControllerAdvice注解的类进行排序，排序的规则是基于实现PriorityOrdered接口或者带有Order注解
 		AnnotationAwareOrderComparator.sort(adviceBeans);
 
 		List<Object> requestResponseBodyAdviceBeans = new ArrayList<>();
-
+		//循环获取到的ControllerAdviceBean
 		for (ControllerAdviceBean adviceBean : adviceBeans) {
 			Class<?> beanType = adviceBean.getBeanType();
 			if (beanType == null) {
 				throw new IllegalStateException("Unresolvable type for ControllerAdviceBean: " + adviceBean);
 			}
-
+			//获取所有ModelAttribute注解的方法，并且没有RequestMapping注解的方法
 			Set<Method> attrMethods = MethodIntrospector.selectMethods(beanType, MODEL_ATTRIBUTE_METHODS);
 			if (!attrMethods.isEmpty()) {
 				this.modelAttributeAdviceCache.put(adviceBean, attrMethods);
@@ -607,6 +623,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 					logger.info("Detected @ModelAttribute methods in " + adviceBean);
 				}
 			}
+			//获取所有带InitBinder注解的方法
 			Set<Method> binderMethods = MethodIntrospector.selectMethods(beanType, INIT_BINDER_METHODS);
 			if (!binderMethods.isEmpty()) {
 				this.initBinderAdviceCache.put(adviceBean, binderMethods);
@@ -614,12 +631,14 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 					logger.info("Detected @InitBinder methods in " + adviceBean);
 				}
 			}
+			//如果实现了RequestBodyAdvice接口
 			if (RequestBodyAdvice.class.isAssignableFrom(beanType)) {
 				requestResponseBodyAdviceBeans.add(adviceBean);
 				if (logger.isInfoEnabled()) {
 					logger.info("Detected RequestBodyAdvice bean in " + adviceBean);
 				}
 			}
+			//如果实现了ResponseBodyAdvice接口
 			if (ResponseBodyAdvice.class.isAssignableFrom(beanType)) {
 				requestResponseBodyAdviceBeans.add(adviceBean);
 				if (logger.isInfoEnabled()) {
@@ -627,7 +646,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 		}
-
+		//添加到requestResponseBodyAdvice集合中
 		if (!requestResponseBodyAdviceBeans.isEmpty()) {
 			this.requestResponseBodyAdvice.addAll(0, requestResponseBodyAdviceBeans);
 		}

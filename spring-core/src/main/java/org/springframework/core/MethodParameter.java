@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  *
  */
 public class MethodParameter {
-    //参数所在方法
+    //参数所在方法 method
 	private final Executable executable;
 	// 参数的索引,从0开始
 	private final int parameterIndex;

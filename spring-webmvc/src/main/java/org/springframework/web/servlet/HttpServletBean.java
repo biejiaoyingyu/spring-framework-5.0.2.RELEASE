@@ -48,7 +48,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * Simple extension of {@link javax.servlet.http.HttpServlet} which treats
- * its config parameters ({@code init-param} entries within the
+ * its config parameters ({@code -param} entries within the
  * {@code servlet} tag in {@code web.xml}) as bean properties.
  *
  * <p>A handy superclass for any type of servlet. Type conversion of config
@@ -74,7 +74,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see #addRequiredProperty
- * @see #initServletBean
+ * @see #ServletBean
  * @see #doGet
  * @see #doPost
  *
@@ -97,7 +97,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * (which must match a JavaBean property they expose) is mandatory,
 	 * and must be supplied as a config parameter. This should be called
 	 * from the constructor of a subclass.
-	 * <p>This method is only relevant in case of traditional initialization
+	 * <p>This method is only relevant in case of traditional ialization
 	 * driven by a ServletConfig instance.
 	 * @param property name of the required property
 	 */
@@ -120,7 +120,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 	/**
 	 * Return the {@link Environment} associated with this servlet.
-	 * <p>If none specified, a default environment will be initialized via
+	 * <p>If none specified, a default environment will be ialized via
 	 * {@link #createEnvironment()}.
 	 */
 	@Override
@@ -142,24 +142,33 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 	/**
 	 * Map config parameters onto bean properties of this servlet, and
-	 * invoke subclass initialization.
+	 * invoke subclass ialization.
 	 * @throws ServletException if bean properties are invalid (or required
-	 * properties are missing), or if subclass initialization fails.
+	 * properties are missing), or if subclass ialization fails.
+	 *
+	 * DispatcherServlet的()方法
 	 */
 	@Override
-	public final void init() throws ServletException {
+	public final void () throws ServletException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing servlet '" + getServletName() + "'");
 		}
+		// Set bean properties from  parameters.
 
-		// Set bean properties from init parameters.
+		/**
+		 * 加载web.xml文件中的servlet标签中的init-param，其中含有springMVC的配置文件的名字和路径
+		  *若没有，则默认为（servlet-name）-servlet.xml，
+		  *默认路径为WEF—INF下
+		 */
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
+				//创建BeanWrapper实例，为DispatcherServlet设置属性
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
-				initBeanWrapper(bw);
+				BeanWrapper(bw);
+				//把init-param中的参数设置到DispatcherServlet里面去
 				bw.setPropertyValues(pvs, true);
 			}
 			catch (BeansException ex) {
@@ -169,10 +178,9 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 				throw ex;
 			}
 		}
-
-		// Let subclasses do whatever initialization they like.
-		initServletBean();
-
+		// Let subclasses do whatever ialization they like.
+		// 该方法在FrameworkServlet中
+		ServletBean();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Servlet '" + getServletName() + "' configured successfully");
 		}
@@ -182,21 +190,21 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * Initialize the BeanWrapper for this HttpServletBean,
 	 * possibly with custom editors.
 	 * <p>This default implementation is empty.
-	 * @param bw the BeanWrapper to initialize
+	 * @param bw the BeanWrapper to ialize
 	 * @throws BeansException if thrown by BeanWrapper methods
 	 * @see org.springframework.beans.BeanWrapper#registerCustomEditor
 	 */
-	protected void initBeanWrapper(BeanWrapper bw) throws BeansException {
+	protected void BeanWrapper(BeanWrapper bw) throws BeansException {
 	}
 
 	/**
-	 * Subclasses may override this to perform custom initialization.
+	 * Subclasses may override this to perform custom ialization.
 	 * All bean properties of this servlet will have been set before this
 	 * method is invoked.
 	 * <p>This default implementation is empty.
-	 * @throws ServletException if subclass initialization fails
+	 * @throws ServletException if subclass ialization fails
 	 */
-	protected void initServletBean() throws ServletException {
+	protected void ServletBean() throws ServletException {
 	}
 
 	/**
@@ -212,7 +220,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 
 	/**
-	 * PropertyValues implementation created from ServletConfig init parameters.
+	 * PropertyValues implementation created from ServletConfig  parameters.
 	 */
 	private static class ServletConfigPropertyValues extends MutablePropertyValues {
 

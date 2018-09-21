@@ -490,6 +490,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	/**
 	 * Overridden method of {@link HttpServletBean}, invoked after any bean properties
 	 * have been set. Creates this servlet's WebApplicationContext.
+	 *
 	 */
 	@Override
 	protected final void initServletBean() throws ServletException {
@@ -500,6 +501,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			/**
+			 * 创建springmvc的ioc容器实例
+			 */
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
 		}
@@ -529,12 +533,22 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
-		WebApplicationContext rootContext =
-				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+
+		/**
+		 * 首先通过ServletContext获得spring容器，因为子容器springMVC要和父容器spring容器进行关联
+		 * 这就是为什么要在ServletContext中注册spring ioc容器的原因
+		 */
+		WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+		//定义springMVC容器wac
 		WebApplicationContext wac = null;
 
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
+			/**
+			 * 判断容器是否由编程式传入（即是否已经存在了容器实例），存在的话直接赋值给wac，给springMVC容器设置父容器
+			 * 最后调用刷新函数configureAndRefreshWebApplicationContext(wac)，作用是把springMVC的配置信息加
+			 * 载到容器中去（之前已经将配置信息的路径设置到了bw中）
+			 */
 			wac = this.webApplicationContext;
 			if (wac instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) wac;
@@ -544,6 +558,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 					if (cwac.getParent() == null) {
 						// The context instance was injected without an explicit parent -> set
 						// the root application context (if any; may be null) as the parent
+
+						//将spring ioc设置为springMVC ioc的父容器
 						cwac.setParent(rootContext);
 					}
 					configureAndRefreshWebApplicationContext(cwac);
@@ -555,22 +571,24 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// has been registered in the servlet context. If one exists, it is assumed
 			// that the parent context (if any) has already been set and that the
 			// user has performed any initialization such as setting the context id
+			// 在ServletContext中寻找是否有springMVC容器，初次运行是没有的，springMVC初始化完毕ServletContext就有了springMVC容器
 			wac = findWebApplicationContext();
 		}
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
+			//当wac既没有没被编程式注册到容器中的，也没在ServletContext找得到，此时就要新建一个springMVC容器
 			wac = createWebApplicationContext(rootContext);
 		}
-
 		if (!this.refreshEventReceived) {
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
 			// refreshed -> trigger initial onRefresh manually here.
+			//到这里mvc的容器已经创建完毕，接着才是真正调用DispatcherServlet的初始化方法onRefresh(wac)
 			onRefresh(wac);
 		}
-
 		if (this.publishContext) {
 			// Publish the context as a servlet context attribute.
+			//将springMVC容器存放到ServletContext中去，方便下次取出来
 			String attrName = getServletContextAttributeName();
 			getServletContext().setAttribute(attrName, wac);
 			if (this.logger.isDebugEnabled()) {
@@ -634,15 +652,18 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 					"': custom WebApplicationContext class [" + contextClass.getName() +
 					"] is not of type ConfigurableWebApplicationContext");
 		}
-		ConfigurableWebApplicationContext wac =
-				(ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
-
+		//实例化空白的ioc容器
+		ConfigurableWebApplicationContext wac = (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
+		//给容器设置环境
 		wac.setEnvironment(getEnvironment());
+		//给容器设置父容器(就是spring容器)，两个ioc容器关联在一起了
 		wac.setParent(parent);
+		//给容器加载springMVC的配置信息，之前已经通过bw将配置文件路径写入到了DispatcherServlet中
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
 			wac.setConfigLocation(configLocation);
 		}
+		//上面提到过这方法，刷新容器，根据springMVC配置文件完成初始化操作，此时springMVC容器创建完成
 		configureAndRefreshWebApplicationContext(wac);
 
 		return wac;
@@ -677,6 +698,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		postProcessWebApplicationContext(wac);
 		applyInitializers(wac);
+		//刷新容器和springioc容器创建一一样
 		wac.refresh();
 	}
 

@@ -38,13 +38,31 @@ import org.springframework.util.Assert;
  * file resources or to the message source. Note that many application
  * objects do not need to be aware of the application context at all,
  * as they can receive collaborating beans via bean references.
- *
  * <p>Many framework classes are derived from this class, particularly
  * within the web support.
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see org.springframework.web.context.support.WebApplicationObjectSupport
+ */
+
+/**
+ * spring ioc容器初始化的过程
+ * 1、web应用程序启动时，tomcat会读取web.xml文件中的context-parm（含有配置文件的路径）和listener节点，
+ * 		接着会为应用程序创建一个ServletContext，为全局共享，Spring ioc容器就是存储在这里
+ * 2、tomcat将context-param节点转换为键值对，写入到ServletContext中
+ * 3、创建listener节点中的ContextLoaderListener实例，调用该实例，初始化webapplicationContext，
+ * 		这是一个接口，其实现类为XmlWebApplicationContext（即spring的IOC容器），
+ * 		其通过ServletContext.getinitialParameter（"contextConfigLoaction"）从ServletContext中获取
+ * 		context-param中的值（即spring ioc容器配置文件的路径），这就是为什么要有第二步的原因。接着根据配置文件
+ * 		的路径加载配置文件信息（其中含有Bean的配置信息）到WebApplicationContext（即spring ioc容器）中，
+ * 		将WebApplicationContext以WebApplicationContext.ROOTWEBAPPLICATIONCONTEXTATTRIBUTE为属性Key，
+ * 		将其存储到ServletContext中，便于获取。至此，spring ioc容器初始化完毕
+ * 4、容器初始化web.xml中配置的servlet，为其初始化自己的上下文信息servletContext，并加载其设置的配置信息到
+ *  	该上下文中。将WebApplicationContext（即spring ioc容器）设置为它的父容器。其中便有SpringMVC（假设配
+ *  	置了SpringMVC），这就是为什么spring ioc是springmvc ioc的父容器的原因
+ *
+ * 5、SpringMVC通过web.xml文件中servlet标签下的DispatcherServlet类完成自身的初始化
  */
 public abstract class ApplicationObjectSupport implements ApplicationContextAware {
 

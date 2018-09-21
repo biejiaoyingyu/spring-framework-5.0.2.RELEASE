@@ -153,6 +153,8 @@ import org.springframework.web.util.WebUtils;
  * @see org.springframework.web.HttpRequestHandler
  * @see org.springframework.web.servlet.mvc.Controller
  * @see org.springframework.web.context.ContextLoaderListener
+ * --------------------------------------------------------------------
+ *SpringMVC通过web.xml文件中servlet标签下的DispatcherServlet类完成自身的初始化
  */
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
@@ -508,7 +510,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * This implementation calls {@link #initStrategies}.
 	 *
 	 *
-	 * 重写了spring的onRefresh()方法，父子容器？
+	 * 重写了spring的onRefresh()方法，父子容器?
+	 * 的确是这样的在这里初始化springmvc的9大组件
 	 */
 	@Override
 	protected void onRefresh(ApplicationContext context) {

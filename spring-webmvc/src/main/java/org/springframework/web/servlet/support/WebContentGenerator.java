@@ -57,6 +57,18 @@ import java.util.concurrent.TimeUnit;
  * @see #setCacheSeconds
  * @see #setCacheControl
  * @see #setRequireSession
+ *
+ * 用于提供浏览器缓存控制，是否必须有session开启，支持的请求方法类型
+ * -----------------------------------------------------------
+ * 1、cacheSeconds =0时，则将设置如下响应头数据：
+ * 		Pragma：no-cache             // HTTP 1.0的不缓存响应头
+ * 		Expires：1L                  // useExpiresHeader=true时，HTTP 1.0
+ * 		Cache-Control ：no-cache      // useCacheControlHeader=true时，HTTP 1.1
+ * 		Cache-Control ：no-store       // useCacheControlNoStore=true时，该设置是防止Firefox缓存
+ * 2、cacheSeconds>0时，则将设置如下响应头数据：
+ * 		Expires：System.currentTimeMillis() + cacheSeconds * 1000L    // useExpiresHeader=true时，HTTP 1.0
+ * 		Cache-Control ：max-age=cacheSeconds                    // useCacheControlHeader=true时，HTTP 1.1
+ * 3、cacheSeconds<0时，则什么都不设置，即保留上次的缓存设置。
  */
 public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
@@ -69,6 +81,8 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	/** HTTP method "POST" */
 	public static final String METHOD_POST = "POST";
 
+
+
 	private static final String HEADER_PRAGMA = "Pragma";
 
 	private static final String HEADER_EXPIRES = "Expires";
@@ -77,12 +91,19 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
 
 	/** Set of supported HTTP methods */
+
+	/**
+	 * 设置支持请求方法的类型，默认支持GET/POST/HEAD,如果想支持PUT可以加入PUT
+	 */
 	@Nullable
 	private Set<String> supportedMethods;
 
 	@Nullable
 	private String allowHeader;
 
+	/**
+	 * 是否当前请求有session，如果这个属性为true，但是请求没有打开Session将抛出异常
+	 */
 	private boolean requireSession = false;
 
 	@Nullable
@@ -97,12 +118,20 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	// deprecated fields
 
 	/** Use HTTP 1.0 expires header? */
+	/**
+	 * 是否支持http1.0过期响应头：如果为true，则会在响应头添加："Expires：",需要配合cacheSeconds使用
+	 */
 	private boolean useExpiresHeader = false;
-
+	/**
+	 * 是否使用HTTP1.1协议的缓存控制响应头，如果true则会在响应头添加；需要配合cacheSeconds使用；
+	 */
 	/** Use HTTP 1.1 cache-control header? */
 	private boolean useCacheControlHeader = true;
 
 	/** Use HTTP 1.1 cache-control header value "no-store"? */
+	/**
+	 * 是否使用HTTP 1.1协议的缓存控制响应头，如果true则会在响应头添加；需要配合cacheSeconds使用；firefox?
+	 */
 	private boolean useCacheControlNoStore = true;
 
 	private boolean alwaysMustRevalidate = false;
@@ -371,7 +400,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	protected final void checkRequest(HttpServletRequest request) throws ServletException {
 		// Check whether we should support the request method.
 		/**
-		 *  根据supportedMethods属性判断是否支持当前请求的请求类型
+		 *  根据supportedMethods属性判断是否支持当前请求的请求类型默认支持GET/POST/HEDA?如果是的DELETE怎么办？
 		 */
 		String method = request.getMethod();
 		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {
@@ -380,7 +409,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
 		// Check whether a session is required.
 		/**
-		 *当requireSession(默认false)为true时,检查Session是否存在
+		 *当requireSession(默认false)为true时,检查Session是否存在，如果不存在抛出异常
 		 */
 		if (this.requireSession && request.getSession(false) == null) {
 			throw new HttpSessionRequiredException("Pre-existing session required but none found");
