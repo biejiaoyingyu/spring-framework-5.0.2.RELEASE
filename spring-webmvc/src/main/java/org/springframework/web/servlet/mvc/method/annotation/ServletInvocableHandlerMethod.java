@@ -81,8 +81,6 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 	@Nullable
 	private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
-
-
 	/**
 	 * Creates an instance from the given handler and method.
 	 */
