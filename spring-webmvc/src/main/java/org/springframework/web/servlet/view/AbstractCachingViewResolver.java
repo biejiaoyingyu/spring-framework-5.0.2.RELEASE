@@ -143,9 +143,17 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	}
 
 
+	/**
+	 * 解析视图名称
+	 * @param viewName name of the view to resolve
+	 * @param locale Locale in which to resolve the view.
+	 * ViewResolvers that support internationalization should respect this.
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	@Nullable
-	public View resolveViewName(String viewName, Locale locale) throws Exception {
+	public View  resolveViewName(String viewName, Locale locale) throws Exception {
 		if (!isCache()) {
 			return createView(viewName, locale);
 		}
