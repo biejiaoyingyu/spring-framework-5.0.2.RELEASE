@@ -545,28 +545,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 子类（自己可以定制容器BeanFactory）通过重写这个方法来在BeanFactory创建并预准备完成以后做进一步的设置
 				 */
 				postProcessBeanFactory(beanFactory);
-
 				// Invoke factory processors registered as beans in the context.
 				/**
 				 * 调用BeanFactory的后置处理器，在BeanFactory标准初始化之后执行的
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
-
 				// Register bean processors that intercept bean creation.
 				/**
 				 * 注册bean的后置处理器
 				 */
 				registerBeanPostProcessors(beanFactory);
-
 				// Initialize message source for this context.
-
 				/**
 				 * 初始化MessageSource组件（做国际化功能；消息绑定，消息解析）
 				 */
 				initMessageSource();
-
 				// Initialize event multicaster for this context.
-
 				/**
 				 * 初始化事件派发器
 				 */
@@ -737,7 +731,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.ignoreDependencyInterface(ApplicationContextAware.class);
 
 		/**
-		 * 可以自动解析的自动装配就是用户可以用@	AutoWired自动注入
+		 * 可以自动解析的自动装配就是用户可以用@AutoWired自动注入
 		 *
 		 * 设置了几个自动装配的特殊规则，如果是BeanFactory类型，则注入beanFactory对象，
 		 * 如果是ResourceLoader、ApplicationEventPublisher、
