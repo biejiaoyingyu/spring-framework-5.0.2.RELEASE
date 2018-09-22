@@ -119,6 +119,11 @@ public abstract class SpringFactoriesLoader {
 		return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
 	}
 
+	/**
+	 * 加载元数据的配置信息，springboot典型应用
+	 * @param classLoader
+	 * @return
+	 */
 	private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
 		MultiValueMap<String, String> result = cache.get(classLoader);
 		if (result != null)
@@ -131,6 +136,9 @@ public abstract class SpringFactoriesLoader {
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
 				UrlResource resource = new UrlResource(url);
+				/**
+				 * 得每个配置的路径，然后然后加载每个文件，的到properties类，获取相应类相应配置
+				 */
 				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 				for (Map.Entry<?, ?> entry : properties.entrySet()) {
 					List<String> factoryClassNames = Arrays.asList(
