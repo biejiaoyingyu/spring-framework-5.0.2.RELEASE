@@ -50,6 +50,10 @@ import org.springframework.core.io.ResourceLoader;
  * @see org.springframework.core.io.ResourceLoader
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ *
+ * --------------------------------------------------
+ * 其中ResourceLoader用于从一个源（如InputStream等）加载资源文件，
+ * ResourcePatternResolver 是ResourceLoader的子类，根据 path-pattern 加载资源。
  */
 public interface ResourcePatternResolver extends ResourceLoader {
 

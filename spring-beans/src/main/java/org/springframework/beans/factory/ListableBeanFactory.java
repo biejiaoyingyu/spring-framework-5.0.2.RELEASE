@@ -54,6 +54,14 @@ import org.springframework.lang.Nullable;
  * @since 16 April 2001
  * @see HierarchicalBeanFactory
  * @see BeanFactoryUtils
+ *
+ *
+ * --------------------------------------------------------------------------
+ *ListableBeanFactory 继承了BeanFactory，实现了枚举方法可以列举出当前BeanFactory中所有
+ * 的bean对象而不必根据name一个一个的获取。 如果 ListableBeanFactory 对象还是一个
+ * HierarchicalBeanFactory则getBeanDefinitionNames()方法只会返回当前BeanFactory
+ * 中的Bean对象而不会去父级BeanFactory中查询。
+ *
  */
 public interface ListableBeanFactory extends BeanFactory {
 

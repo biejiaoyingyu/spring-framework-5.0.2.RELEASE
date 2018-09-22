@@ -121,6 +121,14 @@ import org.springframework.util.ReflectionUtils;
  * @see org.springframework.context.event.ApplicationEventMulticaster
  * @see org.springframework.context.ApplicationListener
  * @see org.springframework.context.MessageSource
+ *
+ *
+ * -------------------------------
+ *
+ * AbstractApplicationContext——ApplicationContext接口的抽象实现，没有强制规定配置的存储类型，
+ * 仅仅实现了通用的上下文功能。这个实现用到了模板方法设计模式，需要具体的子类来实现其抽象方法。
+ * 自动通过registerBeanPostProcessors()方法注册BeanFactoryPostProcessor, BeanPostProcessor
+ * 和ApplicationListener的实例用来探测bean factory里的特殊bean——对比1分析
  */
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext {
@@ -307,6 +315,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * form, allowing for further customization.
 	 * <p>If none specified, a default environment will be initialized via
 	 * {@link #createEnvironment()}.
+	 *
+	 *其持有一个ConfigurableEnvironment实例，用来实现EnvironmentCapable接口的getEnvironment方法
+	 *
 	 */
 	@Override
 	public ConfigurableEnvironment getEnvironment() {
@@ -469,6 +480,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * this (child) application context environment if the parent is non-{@code null} and
 	 * its environment is an instance of {@link ConfigurableEnvironment}.
 	 * @see ConfigurableEnvironment#merge(ConfigurableEnvironment)
+	 * --------------------------
+	 * 如setParent/setEnvironment等方法，由AbstractApplicationContext实现
 	 */
 	@Override
 	public void setParent(@Nullable ApplicationContext parent) {
@@ -1139,6 +1152,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Also removes a JVM shutdown hook, if registered, as it's not needed anymore.
 	 * @see #doClose()
 	 * @see #registerShutdownHook()
+	 *
+	 * 由AbstractApplicationContext实现，用于关闭ApplicationContext销毁所有beans，
+	 * 此外如果注册有JVM shutdown hook，同样要将其移除
 	 */
 	@Override
 	public void close() {
@@ -1261,6 +1277,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	//---------------------------------------------------------------------
 	// Implementation of BeanFactory interface
 	//---------------------------------------------------------------------
+	/**
+	 *  AbstractApplicationContext 间接实现了这两个接口，然而却并没有实现任何BeanFactory
+	 *  的任何功能。AbstractApplicationContext
+	 *  拥有一个 ConfigurableListableBeanFactory实例，所有BeanFactory的功能都代理给该实例完成
+	 */
 
 	@Override
 	public Object getBean(String name) throws BeansException {
@@ -1391,6 +1412,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return getBeanFactory().getBeanNamesForAnnotation(annotationType);
 	}
 
+
 	@Override
 	public Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType)
 			throws BeansException {
@@ -1440,6 +1462,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// Implementation of MessageSource interface
 	//---------------------------------------------------------------------
 
+	/**
+	 * AbstractApplicationContext持有一个MessageSource实例，将MessageSource接口的方法代理给该实例来完成
+	 */
 	@Override
 	public String getMessage(String code, @Nullable Object args[], @Nullable String defaultMessage, Locale locale) {
 		return getMessageSource().getMessage(code, args, defaultMessage, locale);
@@ -1492,6 +1517,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	//---------------------------------------------------------------------
 	// Implementation of Lifecycle interface
 	//---------------------------------------------------------------------
+
+	/**
+	 * 拥有一个LifecycleProcessor实例，用于管理自身的生命周期，AbstractApplicationContext的
+	 * Lifecycle方法如start、stop等由会代理给LifecycleProcessor进行处理
+	 * 启动和停止的时候会发布事件
+	 */
 
 	@Override
 	public void start() {

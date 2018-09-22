@@ -26,6 +26,9 @@ import org.springframework.lang.Nullable;
  * @since 3.1
  * @see Environment
  * @see PropertySourcesPropertyResolver
+ *----------------------------------------------------
+ *配置文件解析器的最顶级接口，解析配置文件获取属性值等作用
+ *
  */
 public interface PropertyResolver {
 

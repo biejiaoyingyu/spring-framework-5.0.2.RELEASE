@@ -108,6 +108,11 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.1
  * @see #onStartup(Set, ServletContext)
  * @see WebApplicationInitializer
+ *
+ *
+ *
+ * 会将指定的感兴趣的类的子类（实现类和子接口等）传递过来，容器启动的时候为这些不是接口，不是抽象类的类型创建对象
+ * 其中Set<Class<?>> arg0，就是感兴趣类型的子类型
  */
 @HandlesTypes(WebApplicationInitializer.class)
 public class SpringServletContainerInitializer implements ServletContainerInitializer {
@@ -138,6 +143,12 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 	 * @see WebApplicationInitializer#onStartup(ServletContext)
 	 * @see AnnotationAwareOrderComparator
 	 */
+
+	/**
+	 * 运用启动的时候会调用
+	 * ServletContext当前的web应用，域对象
+	 * Set<Class<?>> arg0，就是感兴趣类型的子类型
+	 */
 	@Override
 	public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
 			throws ServletException {
@@ -165,7 +176,17 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 			servletContext.log("No Spring WebApplicationInitializer types detected on classpath");
 			return;
 		}
-
+		/**
+		 * 1.这里可以注册不能用注解的第3方组件，并不是拿到ServletContext对象就能注册，必须在项目启动的时候才能注册组件
+		 * //注册3大组件
+		 * Dynamic addServlet = sc.addServlet("userServlet", new UserServlet());
+		 * addServlet.addMapping("/user");
+		 * sc.addListener(UserListener.class);
+		 * FilterRegistration.Dynamic addFilter = sc.addFilter("userFilter", UserFilter.class);
+		 * addFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+		 *
+		 * 2.或者利用ServletContextLister的到的ServletContext
+		 */
 		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
 		AnnotationAwareOrderComparator.sort(initializers);
 		for (WebApplicationInitializer initializer : initializers) {

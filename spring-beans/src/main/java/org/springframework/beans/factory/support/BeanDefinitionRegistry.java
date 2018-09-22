@@ -44,6 +44,13 @@ import org.springframework.core.AliasRegistry;
  * @see org.springframework.context.support.GenericApplicationContext
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
  * @see PropertiesBeanDefinitionReader
+ *
+ * ----------------------------------------
+ *用于持有像RootBeanDefinition和 ChildBeanDefinition实例的bean definitions的注册表接口。
+ * DefaultListableBeanFactory实现了这个接口，因此可以通过相应的方法向beanFactory里面注册bean。
+ * GenericApplicationContext内置一个DefaultListableBeanFactory实例，
+ * 它对这个接口的实现实际上是通过调用这个实例的相应方法实现的。
+ *
  */
 public interface BeanDefinitionRegistry extends AliasRegistry {
 

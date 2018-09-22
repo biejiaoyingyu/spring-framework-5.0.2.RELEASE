@@ -40,6 +40,9 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Arjen Poutsma
  * @author Chris Beams
  * @since 3.2
+ *
+ * -------------------------------------
+ *	注解方式的配置的DispatherServlet的初始化器
  */
 public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 		extends AbstractDispatcherServletInitializer {
@@ -50,9 +53,15 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 * providing it the annotated classes returned by {@link #getRootConfigClasses()}.
 	 * Returns {@code null} if {@link #getRootConfigClasses()} returns {@code null}.
 	 */
+
+	/**
+	 * 创建一个根容器
+	 * @return
+	 */
 	@Override
 	@Nullable
 	protected WebApplicationContext createRootApplicationContext() {
+		//获取配置类，留给开发者
 		Class<?>[] configClasses = getRootConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
@@ -68,9 +77,12 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 * {@inheritDoc}
 	 * <p>This implementation creates an {@link AnnotationConfigWebApplicationContext},
 	 * providing it the annotated classes returned by {@link #getServletConfigClasses()}.
+	 *
+	 * 创建注解方式的IOC容器
 	 */
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
+
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		Class<?>[] configClasses = getServletConfigClasses();
 		if (!ObjectUtils.isEmpty(configClasses)) {

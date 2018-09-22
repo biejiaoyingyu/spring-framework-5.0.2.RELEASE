@@ -22,6 +22,9 @@ package org.springframework.context.annotation;
  *
  * @author Juergen Hoeller
  * @since 4.1
+ * --------------------
+ * AnnotationConfigRegistry——注解配置注册表。
+ * 用于注解配置应用上下文的通用接口，拥有一个注册配置类和扫描配置类的方法。
  */
 public interface AnnotationConfigRegistry {
 

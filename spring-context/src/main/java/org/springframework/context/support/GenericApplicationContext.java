@@ -87,7 +87,16 @@ import org.springframework.util.Assert;
  * @see #registerBeanDefinition
  * @see #refresh()
  * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
- * @see org.springframework.beans.factory.support.PropertiesBeanDefinitionReader
+ * @see org.springframework.beans.factory.support.PropertiesBeanDefinitionReader\
+ *
+ * ----------------------------------------------------
+ * 通用应用上下文，内部持有一个DefaultListableBeanFactory实例,这个类实现了BeanDefinitionRegistry接口，
+ * 可以在它身上使用任意的bean definition读取器。典型的使用案例是：通过BeanFactoryRegistry接口注册bean definitions，
+ * 然后调用refresh()方法来初始化那些带有应用上下文语义（org.springframework.context.ApplicationContextAware）的bean，
+ * 自动探测org.springframework.beans.factory.config.BeanFactoryPostProcessor等。
+ *
+ * ------------------------------
+
  */
 public class GenericApplicationContext extends AbstractApplicationContext implements BeanDefinitionRegistry {
 

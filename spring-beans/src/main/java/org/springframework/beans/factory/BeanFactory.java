@@ -112,6 +112,14 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
+ *
+ * -----------------------------------------------------------------
+ * BeanFactory 是 Spring 管理 Bean 的最顶层接口，是一个 Bean 容器, 管理一系列的ean，
+ * 每一个 bean 使用一个String 类型的name(或称之为id) 来唯一确定，这些 Bean 可以是
+ * prototype 的或者 singleton的 。Spring 提倡使用依赖注入(Dependency Injection)
+ * 的方式装配 Bean。BeanFactory从“configuration source”加载Bean的定义
+ * configuration source 可以是xml文件或者properties文件甚至是数据库。
+ *
  */
 public interface BeanFactory {
 

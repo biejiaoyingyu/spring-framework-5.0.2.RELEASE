@@ -49,6 +49,9 @@ import org.springframework.web.servlet.FrameworkServlet;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @since 3.2
+ *
+ *
+ *
  */
 public abstract class AbstractDispatcherServletInitializer extends AbstractContextLoaderInitializer {
 
@@ -79,19 +82,32 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		String servletName = getServletName();
 		Assert.hasLength(servletName, "getServletName() must not return empty or null");
 
+		/**
+		 * 创建一个web的IOC容器
+		 */
+
 		WebApplicationContext servletAppContext = createServletApplicationContext();
 		Assert.notNull(servletAppContext,
 				"createServletApplicationContext() did not return an application " +
 				"context for servlet [" + servletName + "]");
-
+		/**
+		 * 创建了一个DispacherServlet
+		 */
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());
 
+		/**
+		 * 添加到ServletContext中
+		 */
 		ServletRegistration.Dynamic registration = servletContext.addServlet(servletName, dispatcherServlet);
 		Assert.notNull(registration,
 				"Failed to register servlet with name '" + servletName + "'." +
 				"Check if there is another servlet registered under the same name.");
 
+
+		/**
+		 * 这些给开发者实现
+		 */
 		registration.setLoadOnStartup(1);
 		registration.addMapping(getServletMappings());
 		registration.setAsyncSupported(isAsyncSupported());

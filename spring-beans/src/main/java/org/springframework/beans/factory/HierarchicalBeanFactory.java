@@ -30,6 +30,13 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 07.07.2003
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#setParentBeanFactory
+ * ----------------------------------------------------------------
+ * BeanFactory的子接口HierarchicalBeanFactory是一个具有层级关系的Bean 工厂，拥有属性parentBeanFactory。
+ * 当获取 Bean对象时，如果当前BeanFactory中不存在对应的bean，则会访问其直接 parentBeanFactory 以尝试获取
+ * bean 对象。此外，还可以在当前的 BeanFactory 中 override 父级BeanFactory的同名bean。
+ *
+ *
+ *
  */
 public interface HierarchicalBeanFactory extends BeanFactory {
 

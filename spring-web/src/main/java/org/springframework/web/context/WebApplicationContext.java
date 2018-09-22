@@ -41,6 +41,10 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since January 19, 2001
  * @see ServletContextAware#setServletContext
+ *
+ * -----------------------------------------------
+ * 该接口仅仅在原接口基础上提供了getServletContext()，用于给servlet提供上下文信息。
+ *
  */
 public interface WebApplicationContext extends ApplicationContext {
 

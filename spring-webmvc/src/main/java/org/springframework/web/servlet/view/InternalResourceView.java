@@ -170,7 +170,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 				logger.debug("Forwarding to resource [" + getUrl() + "] in InternalResourceView '" + getBeanName() + "'");
 			}
 			/**
-			 * 转发
+			 * 拿到转发器转发
 			 */
 			rd.forward(request, response);
 		}

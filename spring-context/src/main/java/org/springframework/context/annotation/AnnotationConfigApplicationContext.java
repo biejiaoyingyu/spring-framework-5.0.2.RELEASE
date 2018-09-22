@@ -60,6 +60,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	/**
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
+	 *
+	 * --------------------------------------------------
+	 * 第一个构造器是最基本的无参数构造器，需要通过调用register()方法填充注解类，并进行手动刷新。
+	 * 在这个构造器里初始化了一个读取器和扫描器。
 	 */
 	public AnnotationConfigApplicationContext() {
 		this.reader = new AnnotatedBeanDefinitionReader(this);
@@ -69,6 +73,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	/**
 	 * Create a new AnnotationConfigApplicationContext with the given DefaultListableBeanFactory.
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 *  ------------------------------------------------------------
+	 * 第二个构造器能手动指定beanFactory。
 	 */
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
 		super(beanFactory);
@@ -81,6 +87,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * from the given annotated classes and automatically refreshing the context.
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
+	 * --------------------------------------
+	 * 第三个构造器能手动指定注解类。
+	 * ApplicationContext applicationContext= new AnnotationConfigApplicationContext(MainConf.class);
+	 *
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		this();
@@ -92,6 +102,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Create a new AnnotationConfigApplicationContext, scanning for bean definitions
 	 * in the given packages and automatically refreshing the context.
 	 * @param basePackages the packages to check for annotated classes
+	 * ----------------------------------------------------------------
+	 * 第四个通过指定包名进行自动扫描并刷新
+	 * 由于AnnotationConfigApplicationContext是GenericApplicationContext的子类，
+	 * 在调用它的构造器之前会先调用父类的构造器，父类构造器会实例化一个DefaultListableBeanFactory实例,
+	 * 这个就是基于注解配置的应用上下文的IoC容器。SpringBoot默认调用第一个无参数构造器。
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
 		this();

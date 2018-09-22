@@ -38,6 +38,8 @@ import org.springframework.web.WebApplicationInitializer;
  * @author Chris Beams
  * @author Juergen Hoeller
  * @since 3.2
+ *
+ * 创建根容器
  */
 public abstract class AbstractContextLoaderInitializer implements WebApplicationInitializer {
 

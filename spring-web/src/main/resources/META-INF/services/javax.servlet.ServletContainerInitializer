@@ -1,1 +1,2 @@
 org.springframework.web.SpringServletContainerInitializer
+#当前应用会扫描每个jar包下的META-INF/JAVAX.SERVLET.Servlet.servletContainerInitializer指定的实现类，并且运行它。

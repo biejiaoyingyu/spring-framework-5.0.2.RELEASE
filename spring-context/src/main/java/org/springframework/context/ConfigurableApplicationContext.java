@@ -39,6 +39,23 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @author Chris Beams
  * @since 03.11.2003
+ *
+ *============================
+ *Closeable是标准JDK所提供的一个接口，用于最后关闭组件释放资源等；
+ *
+ * 根据接口名可以判决，该接口是可配置的！ApplicationContext 接口本身是 read-only 的，
+ * 所以子接口 ConfigurableApplicationContext
+ * 就提供了如setID()、setParent()、setEnvironment()等方法，用来配置ApplicationContext。
+ *
+ *
+ * Configable, //可配置（该接口本身扩展的功能）
+ * Lifecycle, //生命周期可管理
+ * Closeable，//可关闭（释放资源）
+ * EnvironmentCapable，//可配置Environment
+ * MessageSource, //可管理message实现国际化等功能
+ * ApplicationEventPublisher, //可publish事件，调用Listener
+ * ResourcePatternResolver，//加载pattern指定的资源
+ * ListableBeanFactory, HierarchicalBeanFactory,//管理Bean的生命周期，这个最重要，放最后说
  */
 public interface ConfigurableApplicationContext extends ApplicationContext, Lifecycle, Closeable {
 
