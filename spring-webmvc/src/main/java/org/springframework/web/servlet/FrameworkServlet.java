@@ -542,6 +542,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		//定义springMVC容器wac
 		WebApplicationContext wac = null;
 
+		/**
+		 * 这里显然不等于null，为什么debug不走这里，可能是因为debug是在spring-boot环境，而这是spring-5
+		 * 那么这里就能说通了
+		 */
+
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
 			/**

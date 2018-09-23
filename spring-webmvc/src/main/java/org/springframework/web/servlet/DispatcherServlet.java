@@ -510,7 +510,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * This implementation calls {@link #initStrategies}.
 	 *
 	 *
-	 * 重写了spring的onRefresh()方法，父子容器?
+	 * 重写了spring的onRefresh()方法，父子容器?然后在freshspringmvc的时候
+	 * 因为重写了onrefresh()方法会调用他
 	 * 的确是这样的在这里初始化springmvc的9大组件
 	 */
 	@Override

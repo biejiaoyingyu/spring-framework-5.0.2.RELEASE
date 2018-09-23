@@ -83,7 +83,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		Assert.hasLength(servletName, "getServletName() must not return empty or null");
 
 		/**
-		 * 创建一个web的IOC容器
+		 * 创建一个web的IOC容器，就是springmvc IOC容器
 		 */
 
 		WebApplicationContext servletAppContext = createServletApplicationContext();
@@ -91,7 +91,8 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 				"createServletApplicationContext() did not return an application " +
 				"context for servlet [" + servletName + "]");
 		/**
-		 * 创建了一个DispacherServlet
+		 * 创建了一个DispacherServlet，就会执行Servlet生命周期init()方法
+		 * return new DispatcherServlet(servletAppContext)参数为springioc容器;
 		 */
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());

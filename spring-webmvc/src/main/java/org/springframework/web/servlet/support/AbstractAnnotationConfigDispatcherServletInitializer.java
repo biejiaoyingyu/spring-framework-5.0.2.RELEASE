@@ -42,7 +42,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @since 3.2
  *
  * -------------------------------------
- *	注解方式的配置的DispatherServlet的初始化器
+ *	注解方式的配置的DispatherServlet的初始化器，我们整合的时候会去实现这个类，然后tomcat启动的时候会因为
+ *  @HandlesTypes(WebApplicationInitializer.class)	注解，实例化我们实现的类，并且调用onSatart()方法
  */
 public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 		extends AbstractDispatcherServletInitializer {

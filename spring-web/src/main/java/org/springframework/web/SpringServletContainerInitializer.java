@@ -110,6 +110,7 @@ import org.springframework.util.ReflectionUtils;
  * @see WebApplicationInitializer
  *
  *
+ * tomcat启动的时候会创建这个实例并且运行他的onStartup方法
  *
  * 会将指定的感兴趣的类的子类（实现类和子接口等）传递过来，容器启动的时候为这些不是接口，不是抽象类的类型创建对象
  * 其中Set<Class<?>> arg0，就是感兴趣类型的子类型

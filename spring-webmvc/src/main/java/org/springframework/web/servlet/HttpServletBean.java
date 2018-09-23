@@ -74,7 +74,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see #addRequiredProperty
- * @see #ServletBean
+ * @see #initServletBean
  * @see #doGet
  * @see #doPost
  *
@@ -149,7 +149,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * DispatcherServlet的()方法
 	 */
 	@Override
-	public final void () throws ServletException {
+	public final void init() throws ServletException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Initializing servlet '" + getServletName() + "'");
 		}
@@ -167,7 +167,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
-				BeanWrapper(bw);
+				initBeanWrapper(bw);
 				//把init-param中的参数设置到DispatcherServlet里面去
 				bw.setPropertyValues(pvs, true);
 			}
@@ -180,7 +180,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 		// Let subclasses do whatever ialization they like.
 		// 该方法在FrameworkServlet中
-		ServletBean();
+		initServletBean();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Servlet '" + getServletName() + "' configured successfully");
 		}
@@ -194,7 +194,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * @throws BeansException if thrown by BeanWrapper methods
 	 * @see org.springframework.beans.BeanWrapper#registerCustomEditor
 	 */
-	protected void BeanWrapper(BeanWrapper bw) throws BeansException {
+	protected void initBeanWrapper(BeanWrapper bw) throws BeansException {
 	}
 
 	/**
@@ -204,7 +204,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * <p>This default implementation is empty.
 	 * @throws ServletException if subclass ialization fails
 	 */
-	protected void ServletBean() throws ServletException {
+	protected void initServletBean() throws ServletException {
 	}
 
 	/**
