@@ -56,7 +56,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 */
 
 	/**
-	 * 创建一个根容器
+	 * 创建一个根容器(springioc)
 	 * @return
 	 */
 	@Override
@@ -79,7 +79,7 @@ public abstract class AbstractAnnotationConfigDispatcherServletInitializer
 	 * <p>This implementation creates an {@link AnnotationConfigWebApplicationContext},
 	 * providing it the annotated classes returned by {@link #getServletConfigClasses()}.
 	 *
-	 * 创建注解方式的IOC容器
+	 * 创建注解方式的springmvc IOC容器
 	 */
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {

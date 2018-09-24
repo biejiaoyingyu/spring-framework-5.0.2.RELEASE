@@ -62,6 +62,16 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 	 * {@code ContextLoaderListener} is initialized with the application context returned
 	 * from the {@link #createRootApplicationContext()} template method.
 	 * @param servletContext the servlet context to register the listener against
+	 *
+	 * ServletContextListener 是 Servlet 中比较重要的一个接口:监听 Servlet 容器的启动和销毁事件.
+	 * 所以在 ContextLoaderListener 中：contextInitialized ：参数为所要监听的ServletContextEvent，
+	 * 也就是Tomcat启动加载完web.xml会产生的事件，ServletContextEvent 持有从web.xml加载的初始化
+	 * 配置的 ServletContext 上下文contextDestroyed ：在Tomcat关闭的时候执行该方法
+	 *
+	 * 当Servlet容器启动事件发生时，将被ContextLoaderLister 监听。此时 ContextLoaderListener
+	 * 会调用实现 ServletContextListener 接口后实现的 contextInitialized 方法，并把在web.xml加
+	 * 载初始化后获取的 ServletContext 传入initWebApplicationContext方法中进行IoC容器的初始化
+	 *
 	 */
 	protected void registerContextLoaderListener(ServletContext servletContext) {
 		WebApplicationContext rootAppContext = createRootApplicationContext();

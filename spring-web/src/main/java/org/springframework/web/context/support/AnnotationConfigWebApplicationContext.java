@@ -191,6 +191,10 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	 * @see ClassPathBeanDefinitionScanner
 	 *
 	 * 加载bean的定义信息
+	 *
+	 *
+	 *  //看到了熟悉的loadBeanDefinition,
+	 *	//就像我们前面对IOC容器的分析中一样，这个加载工程在容器的refresh()的时候启动。 
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {

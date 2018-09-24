@@ -49,9 +49,6 @@ import org.springframework.web.servlet.FrameworkServlet;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @since 3.2
- *
- *
- *
  */
 public abstract class AbstractDispatcherServletInitializer extends AbstractContextLoaderInitializer {
 
@@ -92,7 +89,8 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 				"context for servlet [" + servletName + "]");
 		/**
 		 * 创建了一个DispacherServlet，就会执行Servlet生命周期init()方法
-		 * return new DispatcherServlet(servletAppContext)参数为springioc容器;
+		 * return new DispatcherServlet(servletAppContext)参数为springmvcioc容器;然后在初始化
+		 * DispacherServlet的过程中会刷新容器，和pringmvc建立父子容器关系。
 		 */
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());
