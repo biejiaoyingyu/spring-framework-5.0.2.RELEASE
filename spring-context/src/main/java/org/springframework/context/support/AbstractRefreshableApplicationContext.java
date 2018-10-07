@@ -118,11 +118,22 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
+
+
+	/**
+	 * 看到这里的时候，我觉得就应该站在高处看 ApplicationContext 了，ApplicationContext 继承自
+	 * BeanFactory，但是它不应该被理解为 BeanFactory 的实现类，而是说其内部持有一个实例化的 BeanFactory
+	 * （DefaultListableBeanFactory）。以后所有的 BeanFactory 相关的操作其实是委托给这个实例来处理的。
+	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
 		/**
 		 *  查看是否已经存在bean工厂,存在则销毁bean,且关闭工厂
 		 */
+
+		// 如果 ApplicationContext 中已经加载过 BeanFactory 了，销毁所有 Bean，关闭 BeanFactory
+		// 注意，应用中 BeanFactory 本来就是可以多个的，这里可不是说应用全局是否有 BeanFactory，而是当前
+		// ApplicationContext 是否有 BeanFactory
 		if (hasBeanFactory()) {
 			destroyBeans();
 			/**
@@ -136,6 +147,8 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			 * createBeanFactory()该方法内部是用给定的父项创建一个新的DefaultListableBeanFactory，
 			 * 过程中给最上层是给AbstractBeanFactory初始化parentBeanFactory值，
 			 * 该字段是父bean工厂，用于bean继承支持。具体不在详细展开，也很清晰
+			 *
+			 *
 			 */
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			/**
@@ -143,7 +156,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			 */
 			beanFactory.setSerializationId(getId());
 			/**
-			 * 设置bean工厂属性
+			 * 设置 BeanFactory 的两个配置属性：是否允许 Bean 覆盖、是否允许循环引用
 			 */
 			customizeBeanFactory(beanFactory);
 			/**
@@ -249,10 +262,20 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @param beanFactory
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+
+		// BeanDefinition 的覆盖问题可能会有开发者碰到这个坑，就是在配置文件中定义 bean 时使
+		// 用了相同的 id 或 name，默认情况下，allowBeanDefinitionOverriding 属性为 null，
+		// 如果在同一配置文件中重复了，会抛错，但是如果不是同一配置文件中，会发生覆盖。
+		// 循环引用也很好理解：A 依赖 B，而 B 依赖 A。或 A 依赖 B，B 依赖 C，而 C 依赖 A。
+		// 默认情况下，Spring 允许循环依赖，当然如果你在 A 的构造方法中依赖 B，在 B 的构造方
+		// 法中依赖 A 是不行的。
 		if (this.allowBeanDefinitionOverriding != null) {
+
+			// 是否允许 Bean 定义覆盖
 			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
 		if (this.allowCircularReferences != null) {
+			// 是否允许 Bean 间的循环依赖
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);
 		}
 	}

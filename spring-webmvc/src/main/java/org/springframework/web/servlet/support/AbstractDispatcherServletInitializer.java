@@ -90,7 +90,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		/**
 		 * 创建了一个DispacherServlet，就会执行Servlet生命周期init()方法
 		 * return new DispatcherServlet(servletAppContext)参数为springmvcioc容器;然后在初始化
-		 * DispacherServlet的过程中会刷新容器，和pringmvc建立父子容器关系。
+		 * DispacherServlet的过程中会刷新容器，和springmvc建立父子容器关系。
 		 */
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());

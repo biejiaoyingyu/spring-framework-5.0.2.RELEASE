@@ -112,6 +112,15 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 	 * @see ConfigurableApplicationContext#refresh()
 	 * @see ConfigurableApplicationContext#getBeanFactory()
 	 */
+
+	/**
+	 * 如果你想要在程序运行的时候动态往 Spring IOC 容器注册新的 bean，就会使用到这个类。那我们怎么在运行时获得这个实例呢？
+	 *
+	 * 之前我们说过 ApplicationContext 接口能获取到 AutowireCapableBeanFactory，就是最右上角那个，然后它向下转型就能得到
+	 * DefaultListableBeanFactory 了。
+	 * @return
+	 * @throws IllegalStateException
+	 */
 	AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException;
 
 }
