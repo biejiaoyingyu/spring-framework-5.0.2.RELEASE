@@ -224,6 +224,7 @@ public class ContextLoader {
 	 * @see #initWebApplicationContext(ServletContext)
 	 * @see #closeWebApplicationContext(ServletContext)
 	 */
+	//传入spring的ioc容器
 	public ContextLoader(WebApplicationContext context) {
 		this.context = context;
 	}

@@ -537,6 +537,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		/**
 		 * 首先通过ServletContext获得spring容器，因为子容器springMVC要和父容器spring容器进行关联
 		 * 这就是为什么要在ServletContext中注册spring ioc容器的原因
+		 *
 		 */
 		WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		//定义springMVC容器wac
@@ -683,8 +684,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			}
 			else {
 				// Generate default id...
-				wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
-						ObjectUtils.getDisplayString(getServletContext().getContextPath()) + '/' + getServletName());
+				wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX + ObjectUtils.getDisplayString(getServletContext().getContextPath()) + '/' + getServletName());
 			}
 		}
 

@@ -427,6 +427,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @see #initWebApplicationContext
 	 * @see #configureAndRefreshWebApplicationContext
 	 * @see org.springframework.web.WebApplicationInitializer
+	 *
+	 * 参数是webmvc容器
 	 */
 	public DispatcherServlet(WebApplicationContext webApplicationContext) {
 		super(webApplicationContext);

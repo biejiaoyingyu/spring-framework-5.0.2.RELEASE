@@ -44,6 +44,7 @@ import org.springframework.cache.interceptor.CacheOperationSource;
 public abstract aspect AbstractCacheAspect extends CacheAspectSupport implements DisposableBean {
 
 	protected AbstractCacheAspect() {
+
 	}
 
 	/**

@@ -48,7 +48,8 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 
 
 	/**
-	 * 首先创建根容器
+	 * 首先创建根容器，注册父容器
+	 * 多态
 	 * @param servletContext the {@code ServletContext} to initialize
 	 * @throws ServletException
 	 */
@@ -76,6 +77,8 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 	protected void registerContextLoaderListener(ServletContext servletContext) {
 		WebApplicationContext rootAppContext = createRootApplicationContext();
 		if (rootAppContext != null) {
+			//看一下这个的初始化过程，监听tomcat启动
+			//调用public void contextInitialized(ServletContextEvent event)
 			ContextLoaderListener listener = new ContextLoaderListener(rootAppContext);
 			listener.setContextInitializers(getRootApplicationContextInitializers());
 			servletContext.addListener(listener);
