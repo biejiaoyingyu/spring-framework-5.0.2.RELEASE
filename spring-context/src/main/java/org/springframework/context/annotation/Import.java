@@ -51,11 +51,15 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+/**
+ * 只允许放到类上
+ */
 public @interface Import {
 
 	/**
-	 * {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar}
-	 * or regular component classes to import.
+	 * {@link Configuration}, {@link ImportSelector}, {@link ImportBeanDefinitionRegistrar} or regular component classes to import.
+	 *
+	 * 这个注释很重要
 	 */
 	Class<?>[] value();
 

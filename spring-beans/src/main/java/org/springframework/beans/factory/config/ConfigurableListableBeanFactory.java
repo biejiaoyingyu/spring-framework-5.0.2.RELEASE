@@ -39,6 +39,12 @@ import org.springframework.lang.Nullable;
  * @since 03.11.2003
  * @see org.springframework.context.support.AbstractApplicationContext#getBeanFactory()
  */
+
+
+/**
+ * ConfigurableListableBeanFactory 也是一个特殊的接口，特殊之处在于它继承了第二层所有的三个接口，而 ApplicationContext 没有。
+ */
+
 public interface ConfigurableListableBeanFactory
 		extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
 

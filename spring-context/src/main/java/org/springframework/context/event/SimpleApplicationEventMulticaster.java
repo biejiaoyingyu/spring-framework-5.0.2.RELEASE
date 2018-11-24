@@ -46,6 +46,10 @@ import org.springframework.util.ErrorHandler;
  * @author Stephane Nicoll
  * @see #setTaskExecutor
  */
+
+/**
+ * 多波器很重要
+ */
 public class SimpleApplicationEventMulticaster extends AbstractApplicationEventMulticaster {
 
 	@Nullable
@@ -130,12 +134,22 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		/**
+		 * springboot启动的时候
+		 * org.springframework.boot.context.logging.LoggingApplicationListener,\
+		 * org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
+		 * org.springframework.boot.context.config.DelegatingApplicationListener,\
+		 * org.springframework.boot.autoconfigure.BackgroundPreinitializer
+		 */
 		for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+			//获取线程池，如果为空则同步处理。这里线程池为空，还未没初始化。
 			Executor executor = getTaskExecutor();
 			if (executor != null) {
+				//异步发送事件
 				executor.execute(() -> invokeListener(listener, event));
 			}
 			else {
+				//同步发送事件
 				invokeListener(listener, event);
 			}
 		}

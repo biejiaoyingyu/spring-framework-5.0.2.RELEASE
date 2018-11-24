@@ -16,8 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -25,6 +23,8 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.function.Supplier;
 
 /**
  * Standalone application context, accepting annotated classes as input - in particular
@@ -63,10 +63,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 *
 	 * --------------------------------------------------
 	 * 第一个构造器是最基本的无参数构造器，需要通过调用register()方法填充注解类，并进行手动刷新。
-	 * 在这个构造器里初始化了一个读取器和扫描器。
+	 * 在这个构造器里初始化了一个读取器和扫描器。===>看父类构造器
 	 */
 	public AnnotationConfigApplicationContext() {
+		//在IOC容器中初始化一个 注解bean读取器AnnotatedBeanDefinitionReader
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		//在IOC容器中初始化一个 按类路径扫描注解bean的 扫描器
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 
@@ -88,7 +90,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
 	 * --------------------------------------
-	 * 第三个构造器能手动指定注解类。
+	 * 第三个构造器能手动指定注解类。（这个应该是主要的把）
 	 * ApplicationContext applicationContext= new AnnotationConfigApplicationContext(MainConf.class);
 	 *
 	 */
@@ -167,6 +169,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * e.g. {@link Configuration @Configuration} classes
 	 * @see #scan(String...)
 	 * @see #refresh()
+	 */
+	/**
+	 * 按指定bean配置类读取bean
 	 */
 	public void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");

@@ -32,6 +32,10 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.DefaultSingletonBeanRegistry
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
  */
+
+/**
+ * 这个有什么用？
+ */
 public interface SingletonBeanRegistry {
 
 	/**

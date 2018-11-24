@@ -539,10 +539,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.初始化bean工厂
-
 			// 这步比较关键，这步完成后，配置文件就会解析成一个个 Bean 定义，注册到 BeanFactory 中，
 			// 当然，这里说的 Bean 还没有初始化，只是配置信息都提取出来了，
-			// 注册也只是将这些信息都保存到了注册中心(说到底核心是一个 beanName-> beanDefinition 的 map)
+			// 注册也只是将这些信息都保存到了注册中心(说到底核心是一个 beanName--> beanDefinition 的 map)
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -570,6 +569,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// 这里是提供给子类的扩展点，到这里的时候，所有的 Bean 都加载、注册完成了，但是都还没有初始化
 				// 具体的子类可以在这步的时候添加一些特殊的 BeanFactoryPostProcessor 的实现类或做点什么事
+
 				postProcessBeanFactory(beanFactory);
 				// Invoke factory processors registered as beans in the context.
 				/**
@@ -671,6 +671,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 * 这里我们需要注意的是initPropertySources这个方法是AbstractApplicationContext父类的一个空实现，
 		 * ClassPathXmlApplicationContext继承关系中也没人实现它，所以对于ClassPathXmlApplicationContext
 		 * 来说就是空实现，不做任何操作。
+		 *
 		 */
 		initPropertySources();
 
@@ -710,7 +711,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	//比较重要，这里将会初始化 BeanFactory、加载 Bean、注册 Bean 等等
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
-		// 关闭旧的 BeanFactory (如果有)，创建新的 BeanFactory，加载 Bean 定义、注册 Bean 等等
+		// 关闭旧的 BeanFactory (如果有)，创建新的 BeanFactory，加载 Bean 定义、注册 Bean 等等=======>AbstractApplicationContext.java
 		refreshBeanFactory();
 		// 返回刚刚创建的 BeanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
@@ -859,6 +860,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		/**
 		 * AbstractApplicationContext的
 		 * private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
+		 * 一个比较核心的代理类出现了，AbstractApplicationContext委托执行post processors任务的工具类
+		 *
+		 * =============
+		 * spring-boot
+		 * SpringApplication类中applyInitializers(context);它会将三个默认的内部类加入到 spring 容器DefaultListableBeanFactory中
+		 * ConfigurationWarningsApplicationContextInitializer$ConfigurationWarningsPostProcessor
+		 * SharedMetadataReaderFactoryContextInitializer$CachingMetadataReaderFactoryPostProcessor
+		 * ConfigFileApplicationListener$PropertySourceOrderingPostProcessor
 		 */
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 

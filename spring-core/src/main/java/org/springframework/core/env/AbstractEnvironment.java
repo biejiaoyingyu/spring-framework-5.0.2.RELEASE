@@ -51,6 +51,11 @@ import org.springframework.util.StringUtils;
  * @see ConfigurableEnvironment
  * @see StandardEnvironment
  */
+
+/**
+ * spring环境创建到了这里
+ * 查看其构造器
+ */
 public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	/**
@@ -121,7 +126,13 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 */
 	public AbstractEnvironment() {
 		/**
-		 * 该方法是一个空实现的方法，我们这里的StandardEnvironment对它进行了实现。
+		 * 该方法是一个空实现的方法，我们这里的StandardServletEnvironment对它进行了实现。
+		 * MutablePropertySources类中propertySourceList已经存在的属性为
+		 * servletConfigInitParams、
+		 * servletContextInitParams、
+		 * jndiProperties（如果存在）、
+		 * systemProperties、
+		 * systemEnvironment。
 		 */
 		customizePropertySources(this.propertySources);
 		if (logger.isDebugEnabled()) {
