@@ -212,8 +212,6 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
 			// 处理 <bean /> 标签定义，这也算是我们的重点吧
-
-
 			processBeanDefinition(ele, delegate);
 		}
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {

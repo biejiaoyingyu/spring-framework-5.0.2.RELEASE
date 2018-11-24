@@ -711,6 +711,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	//比较重要，这里将会初始化 BeanFactory、加载 Bean、注册 Bean 等等
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		// 关闭旧的 BeanFactory (如果有)，创建新的 BeanFactory，加载 Bean 定义、注册 Bean 等等
+		// 委派模式给子类
 		refreshBeanFactory();
 		// 返回刚刚创建的 BeanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();

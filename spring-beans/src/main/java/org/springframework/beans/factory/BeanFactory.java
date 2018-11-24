@@ -114,7 +114,7 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
  *
  * -----------------------------------------------------------------
- * BeanFactory 是 Spring 管理 Bean 的最顶层接口，是一个 Bean 容器, 管理一系列的ean，
+ * BeanFactory 是 Spring 管理 Bean 的最顶层接口，是一个 Bean 容器, 管理一系列的bean，
  * 每一个 bean 使用一个String 类型的name(或称之为id) 来唯一确定，这些 Bean 可以是
  * prototype 的或者 singleton的 。Spring 提倡使用依赖注入(Dependency Injection)
  * 的方式装配 Bean。BeanFactory从“configuration source”加载Bean的定义
@@ -128,6 +128,10 @@ public interface BeanFactory {
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
 	 * will return the factory, not the instance returned by the factory.
+	 */
+
+	/**
+	 * 这个是用于获取FactoryBean的工厂的，不然获取的是生产的bean
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
@@ -336,6 +340,7 @@ public interface BeanFactory {
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
 	 */
+	//获取别名，原名也会被检索
 	String[] getAliases(String name);
 
 }

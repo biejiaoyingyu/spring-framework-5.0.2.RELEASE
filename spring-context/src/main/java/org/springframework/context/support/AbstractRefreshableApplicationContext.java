@@ -162,6 +162,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			/**
 			 * 加载定义的bean
 			 * 我们从注解版开始
+			 * 委派模式
 			 */
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {

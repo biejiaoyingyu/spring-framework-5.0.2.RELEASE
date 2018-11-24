@@ -66,6 +66,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see org.springframework.web.context.ContextLoader#CONFIG_LOCATION_PARAM
 	 * @see org.springframework.web.servlet.FrameworkServlet#setContextConfigLocation
 	 */
+	//用于分割配置文件
 	String CONFIG_LOCATION_DELIMITERS = ",; \t\n";
 
 	/**
