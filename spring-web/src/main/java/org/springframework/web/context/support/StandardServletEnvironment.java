@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -28,6 +25,9 @@ import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.jndi.JndiPropertySource;
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.ConfigurableWebEnvironment;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * {@link Environment} implementation to be used by {@code Servlet}-based web
@@ -80,10 +80,24 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 	 * @see org.springframework.context.support.AbstractApplicationContext#initPropertySources
 	 * @see #initPropertySources(ServletContext, ServletConfig)
 	 */
+	/**
+	 * 创建环境的时候实现了父类的方法，委派模式么？
+	 * 首先添加servletConfigInitParams，
+	 * 然后添加servletContextInitParams，
+	 * 其次判断是否是jndi环境，如果是则添加jndiProperties，
+	 * 最后调用父类的customizePropertySources(propertySources)。
+	 * @param propertySources
+	 *
+	 *
+	 * MutablePropertySources类实现了PropertySources接口。该类中持有了所有的一个propertySourceList集合。
+	 */
 	@Override
 	protected void customizePropertySources(MutablePropertySources propertySources) {
+		// "servletConfigInitParams";
 		propertySources.addLast(new StubPropertySource(SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
+		// "servletContextInitParams";
 		propertySources.addLast(new StubPropertySource(SERVLET_CONTEXT_PROPERTY_SOURCE_NAME));
+		// "jndiProperties"
 		if (JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable()) {
 			propertySources.addLast(new JndiPropertySource(JNDI_PROPERTY_SOURCE_NAME));
 		}

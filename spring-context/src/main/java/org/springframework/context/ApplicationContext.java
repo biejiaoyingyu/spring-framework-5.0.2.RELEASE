@@ -55,6 +55,15 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.BeanFactory
  * @see org.springframework.core.io.ResourceLoader
  */
+
+/**
+ *
+ * 注意最后一个方法，ListableBeanFactory 、HierarchicalBeanFactory、AutowireCapableBeanFactory都实现了 BeanFactory
+ * 而 ApplicationContext 实现了ListableBeanFactory 、HierarchicalBeanFactory而没有实现AutowireCapableBeanFactory
+ * 但是注意最后一个方法 AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException;
+ * 是可以获得AutowireCapableBeanFactory的，所以ApplicationContext有所有次级接口
+
+ */
 public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory,
 		MessageSource, ApplicationEventPublisher, ResourcePatternResolver {
 

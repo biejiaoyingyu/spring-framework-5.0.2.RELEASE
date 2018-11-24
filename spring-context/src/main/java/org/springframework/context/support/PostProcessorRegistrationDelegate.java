@@ -52,6 +52,13 @@ import org.springframework.lang.Nullable;
 
 class PostProcessorRegistrationDelegate {
 
+	/**
+	 * registryPostProcessors：记录硬编码方式注册的BeanDefinitionRegistryPostProcessor。
+	 * regularPostProcessors：记录硬编码注册的BeanFactoryPostProcessor。
+	 * processedBeans：记录已经处理过的BeanDefinitionRegistryPostProcessor。
+	 * @param beanFactory
+	 * @param beanFactoryPostProcessors
+	 */
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
@@ -96,6 +103,8 @@ class PostProcessorRegistrationDelegate {
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			String[] postProcessorNames =
+					//这也是一个经典的用法啊
+					//这行代码通过类型BeanDefinitionRegistryPostProcessor获取的处理类名称为："org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -114,6 +123,7 @@ class PostProcessorRegistrationDelegate {
 			 * 法postProcessBeanDefinitionRegistry
 			 */
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
+			//这里会注册ConfigurationClassPostProcessor
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();

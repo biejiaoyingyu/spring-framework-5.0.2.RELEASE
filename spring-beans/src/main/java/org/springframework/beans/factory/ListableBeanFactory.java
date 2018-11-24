@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Extension of the {@link BeanFactory} interface to be implemented by bean factories
@@ -57,7 +57,7 @@ import org.springframework.lang.Nullable;
  *
  *
  * --------------------------------------------------------------------------
- *ListableBeanFactory 继承了BeanFactory，实现了枚举方法可以列举出当前BeanFactory中所有
+ * ListableBeanFactory 继承了BeanFactory，实现了枚举方法可以列举出当前BeanFactory中所有
  * 的bean对象而不必根据name一个一个的获取。 如果 ListableBeanFactory 对象还是一个
  * HierarchicalBeanFactory则getBeanDefinitionNames()方法只会返回当前BeanFactory
  * 中的Bean对象而不会去父级BeanFactory中查询。

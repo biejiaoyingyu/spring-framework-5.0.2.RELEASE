@@ -133,12 +133,16 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// 这里为什么要定义一个 parent? 看到后面就知道了，是递归问题，
 		// 因为 <beans /> 内部是可以定义 <beans /> 的，所以这个方法的 root 其实不一定就是 xml 的根节点，
 		// 也可以是嵌套在里面的 <beans /> 节点，从源码分析的角度，我们当做根节点就好了
+		//delegate代表
 		BeanDefinitionParserDelegate parent = this.delegate;
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
 			// 这块说的是根节点 <beans ... profile="dev" /> 中的 profile 是否是当前环境需要的，
 			// 如果当前环境配置的 profile 不包含此 profile，那就直接 return 了，不对此 <beans /> 解析
+			// =======================>多环境 处理
+			// PROFILE_ATTRIBUTE = "profile";可以设置多个环境，如果没有设置环境，默认生效
+			// 分隔符为MULTI_VALUE_ATTRIBUTE_DELIMITERS = ",; "
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -175,7 +179,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
 	 */
-	// default namespace 涉及到的就四个标签 <import />、<alias />、<bean /> 和 <beans />，
+	// default namespace 涉及到的就四个标签 <import />、<alias />、<bean /> 和 <beans />，这个要记住
 	// 其他的属于 custom 的
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		if (delegate.isDefaultNamespace(root)) {
@@ -190,12 +194,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					}
 					else {
 						// 解析其他 namespace 的元素
+						//如我们经常会使用到的 <mvc />、<task />、<context />、<aop />等。
+
+						// 这些属于扩展，如果需要使用上面这些 ”非 default“ 标签，那么上面的 xml 头部的地方也要引入相应的 namespace 和 .xsd
+						// 文件的路径，如下所示。同时代码中需要提供相应的 parser 来解析，如 MvcNamespaceHandler、TaskNamespaceHandler、
+						// ContextNamespaceHandler、AopNamespaceHandler 等。
 						delegate.parseCustomElement(ele);
 					}
 				}
 			}
 		}
 		else {
+			//解析自定义标签，dubbo就会走这一条路
 			delegate.parseCustomElement(root);
 		}
 	}

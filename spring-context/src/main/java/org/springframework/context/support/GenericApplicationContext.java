@@ -100,6 +100,7 @@ import org.springframework.util.Assert;
  */
 public class GenericApplicationContext extends AbstractApplicationContext implements BeanDefinitionRegistry {
 
+	//这就是我们的ioc容器 impliments BeanDefinitionRegistry 是可以注册实例的，而且继承了所有的二级接口
 	private final DefaultListableBeanFactory beanFactory;
 
 	@Nullable
@@ -114,6 +115,8 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	 * Create a new GenericApplicationContext.
 	 * @see #registerBeanDefinition
 	 * @see #refresh
+	 *
+	 * 手动创建IOC容器
 	 */
 	public GenericApplicationContext() {
 		this.beanFactory = new DefaultListableBeanFactory();
@@ -284,6 +287,9 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 		/**
 		 * 初始化的时候直接new 的public GenericApplicationContext() {this.beanFactory = new DefaultListableBeanFactory();}
 		 * 设置序列化id
+		 * 参见构造方法
+		 *	==================
+		 * xml不走这里，注解走这里，可以从继承关系看出
 		 */
 		this.beanFactory.setSerializationId(getId());
 	}
