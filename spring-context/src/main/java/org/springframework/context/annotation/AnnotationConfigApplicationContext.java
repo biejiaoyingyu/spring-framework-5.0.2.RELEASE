@@ -112,6 +112,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
 		this();
+		//在这里扫描，获取内部注解配置信息
 		scan(basePackages);
 		refresh();
 	}

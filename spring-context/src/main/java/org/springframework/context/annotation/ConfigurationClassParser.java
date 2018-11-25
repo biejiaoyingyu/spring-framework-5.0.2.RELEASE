@@ -166,6 +166,7 @@ class ConfigurationClassParser {
 			BeanDefinition bd = holder.getBeanDefinition();
 			//无论bd属于下面的那三种情况，都会调用processConfigurationClass方法
 			try {
+				//是否是注解类，进入parse方法
 				if (bd instanceof AnnotatedBeanDefinition) {
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
@@ -184,7 +185,7 @@ class ConfigurationClassParser {
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
-
+		//执行配置类ImportSelector
 		processDeferredImportSelectors();
 	}
 
@@ -224,7 +225,7 @@ class ConfigurationClassParser {
 
 
 	/**
-	 * 在这里
+	 * 在这里==>非常重要
 	 * @param configClass
 	 * @throws IOException
 	 */
@@ -234,7 +235,7 @@ class ConfigurationClassParser {
 		}
 
 		ConfigurationClass existingClass = this.configurationClasses.get(configClass);
-		//在这里处理Cconfiguration重复import
+		//在这里处理Configuration重复import
 		if (existingClass != null) {
 			if (configClass.isImported()) {
 				if (existingClass.isImported()) {
@@ -254,7 +255,7 @@ class ConfigurationClassParser {
 		// Recursively process the configuration class and its superclass hierarchy.
 		SourceClass sourceClass = asSourceClass(configClass);
 		//这里通过循环处理上面的注解标注的类，得到SourceClass对象
-		//递归处理
+		//递归处理//循环处理bean，如果有父类，则处理父类。直至结束。
 		do {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass);
 		}
@@ -280,10 +281,12 @@ class ConfigurationClassParser {
 			throws IOException {
 
 		// Recursively process any member (nested) classes first
+		//处理内部类逻辑，由于传来的参数是我们的启动类，不含内部类，所以跳过。
 		processMemberClasses(configClass, sourceClass);
 
 		// Process any @PropertySource annotations
 		//// 处理 @PropertySource注解
+		//针对属性配置的解析
 		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class)) {
@@ -298,10 +301,12 @@ class ConfigurationClassParser {
 
 		// Process any @ComponentScan annotations
 		// 处理 @ComponentScan注解
+		//这里是根据启动类 @ComponentScan 注解来扫描项目中的bean
 		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
 		if (!componentScans.isEmpty() &&
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
+			//遍历我们项目中的bean，如果是注解定义的bean，则进一步解析
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
@@ -317,11 +322,13 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @Import annotations
-		// //在这个方法里处理Import注解
+		// 在这个方法里处理Import注解 =====>自动配置原理也是通过@Import配置+@Conditinal注解实现的
+		// 这里又是一个递归解析，获取导入的配置类。很多情况下，导入的配置类中会同样包含导入类注解。
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
 		// Process any @ImportResource annotations
 		// 处理 @ImportResource注解
+		//解析导入的 xml 配置类
 		AnnotationAttributes importResource =
 				AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
@@ -341,9 +348,11 @@ class ConfigurationClassParser {
 		}
 
 		// Process default methods on interfaces
+		// 获取接口中的默认方法，1.8以上的处理逻辑
 		processInterfaces(configClass, sourceClass);
 
 		// Process superclass, if any
+		//如果该类有父类，则继续返回。上层方法判断不为空，则继续递归执行。
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();
 			if (superclass != null && !superclass.startsWith("java") &&
@@ -355,6 +364,7 @@ class ConfigurationClassParser {
 		}
 
 		// No superclass -> processing is complete
+		//递归实现，superclass为空，则结束递归中的循环
 		return null;
 	}
 
@@ -391,6 +401,7 @@ class ConfigurationClassParser {
 
 	/**
 	 * Register default methods on interfaces implemented by the configuration class.
+	 * // 获取接口中的默认方法，1.8以上的处理逻辑
 	 */
 	private void processInterfaces(ConfigurationClass configClass, SourceClass sourceClass) throws IOException {
 		for (SourceClass ifc : sourceClass.getInterfaces()) {
@@ -571,6 +582,8 @@ class ConfigurationClassParser {
 		for (DeferredImportSelectorHolder deferredImport : deferredImports) {
 			ConfigurationClass configClass = deferredImport.getConfigurationClass();
 			try {
+
+				//getImportSelector()方法获取的 selector对象为EnableAutoConfigurationImportSelector，继续跟进该对象的selectImports方法
 				String[] imports = deferredImport.getImportSelector().selectImports(configClass.getMetadata());
 				processImports(configClass, asSourceClass(configClass), asSourceClasses(imports), false);
 			}

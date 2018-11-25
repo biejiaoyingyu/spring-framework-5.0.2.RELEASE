@@ -243,7 +243,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 */
 
 	/**
-	 *在容器初使化的时候会调用到这个方法里，
+	 * 在容器初使化的时候会调用到这个方法里，
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {

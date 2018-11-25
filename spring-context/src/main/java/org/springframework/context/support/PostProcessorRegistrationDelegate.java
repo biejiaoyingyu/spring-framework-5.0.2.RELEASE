@@ -103,8 +103,19 @@ class PostProcessorRegistrationDelegate {
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			String[] postProcessorNames =
+					//这里是spring-boot（这里应该是注解配置啊）配置的入口
 					//这也是一个经典的用法啊
 					//这行代码通过类型BeanDefinitionRegistryPostProcessor获取的处理类名称为："org.springframework.context.annotation.internalConfigurationAnnotationProcessor"
+
+					//而在源码中却搜不到internalConfigurationAnnotationProcessor类，为什么呢？===》public class AnnotationConfigUtils里面定义
+					//当启动springBoot，创建springBoot容器上下文AnnotationConfigEmbeddedWebApplicationContext时，会装配几个默认bean：
+						//public AnnotationConfigEmbeddedWebApplicationContext() {
+							//在这里装配
+							//this.reader = new AnnotatedBeanDefinitionReader(this);
+							//this.scanner = new ClassPathBeanDefinitionScanner(this);
+						//}
+
+
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
